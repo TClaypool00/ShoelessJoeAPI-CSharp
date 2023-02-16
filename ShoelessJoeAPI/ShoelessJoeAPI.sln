@@ -5,6 +5,10 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoelessJoeAPI.App", "ShoelessJoeAPI.App\ShoelessJoeAPI.App.csproj", "{1190063B-E494-428C-B758-DE0A57CFC5D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoelessJoeAPI.DataAccess", "ShoelessJoeAPI.DataAccess\ShoelessJoeAPI.DataAccess.csproj", "{F44B6DEA-C5E4-4F71-B61B-B53CECA1CC68}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoelessJoeAPI.Core", "ShoelessJoeAPI.Core\ShoelessJoeAPI.Core.csproj", "{4D9CF12D-F434-439C-9668-DE80DD54DCA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{1190063B-E494-428C-B758-DE0A57CFC5D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1190063B-E494-428C-B758-DE0A57CFC5D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1190063B-E494-428C-B758-DE0A57CFC5D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F44B6DEA-C5E4-4F71-B61B-B53CECA1CC68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F44B6DEA-C5E4-4F71-B61B-B53CECA1CC68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F44B6DEA-C5E4-4F71-B61B-B53CECA1CC68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F44B6DEA-C5E4-4F71-B61B-B53CECA1CC68}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D9CF12D-F434-439C-9668-DE80DD54DCA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D9CF12D-F434-439C-9668-DE80DD54DCA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D9CF12D-F434-439C-9668-DE80DD54DCA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D9CF12D-F434-439C-9668-DE80DD54DCA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
