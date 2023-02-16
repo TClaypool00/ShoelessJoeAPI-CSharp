@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using ShoelessJoeAPI.Core.Interfaces;
 using ShoelessJoeAPI.DataAccess.DataModels;
+using ShoelessJoeAPI.DataAccess.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var serverVersion = new MySqlServerVersion(SecretConfig.Version);
+builder.Services.AddDbContext<ShoelessJoeContext>(options => options.UseMySql(SecretConfig.ConnectionString, new MySqlServerVersion(SecretConfig.Version)));
 
-builder.Services.AddDbContext<ShoelessJoeContext>(options => options.UseMySql(SecretConfig.ConnectionString, serverVersion));
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
