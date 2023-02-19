@@ -14,19 +14,10 @@ namespace ShoelessJoeAPI.DataAccess.Services
             _context = context;
         }
 
-        public async Task<bool> AddUserAsync(CoreUser user)
+        public async Task AddUserAsync(CoreUser user)
         {
-            try
-            {
-                await _context.Users.AddAsync(Mapper.MapUser(user));
-                await SaveAsync();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            await _context.Users.AddAsync(Mapper.MapUser(user));
+            await SaveAsync();
         }
 
         public async Task<CoreUser> GetUserByEmailAsync(string email)
@@ -57,36 +48,32 @@ namespace ShoelessJoeAPI.DataAccess.Services
 
         }
 
-        public async Task SaveAsync()
+        private async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateUserAsync(CoreUser user, int id)
+        public async Task UpdateUserAsync(CoreUser user, int id)
         {
-            try
-            {
-                var dataUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
-                var userToUpdate = Mapper.MapUser(dataUser);
+            var dataUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+            var userToUpdate = Mapper.MapUser(user);
 
-                userToUpdate.Password = dataUser.Password;
-                userToUpdate.IsAdmin = dataUser.IsAdmin;
+            userToUpdate.Password = dataUser.Password;
+            userToUpdate.IsAdmin = dataUser.IsAdmin;
 
-                _context.Entry(dataUser).CurrentValues.SetValues(userToUpdate);
+            _context.Entry(dataUser).CurrentValues.SetValues(userToUpdate);
 
-                await SaveAsync();
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            await SaveAsync();
         }
 
-        public Task<bool> UserExistsByEmailAsync(string email)
+        public Task<bool> UserExistsByEmailAsync(string email, int? userId = null)
         {
-            return _context.Users.AnyAsync(u => u.Email == email);
+            if (userId is null)
+            {
+                return _context.Users.AnyAsync(u => u.Email == email);
+            }
+
+            return _context.Users.AnyAsync(u => u.Email == email && u.UserId != userId);
         }
 
         public Task<bool> UserExistsByIdAsync(int id)
@@ -94,9 +81,14 @@ namespace ShoelessJoeAPI.DataAccess.Services
             return _context.Users.AnyAsync(u => u.UserId == id);
         }
 
-        public Task<bool> UserExistsByPhoneNumbAsync(string phoneNumb)
+        public Task<bool> UserExistsByPhoneNumbAsync(string phoneNumb, int? userId = null)
         {
-            return _context.Users.AnyAsync(u => u.PhoneNumb == phoneNumb);
+            if (userId is null)
+            {
+                return _context.Users.AnyAsync(u => u.PhoneNumb == phoneNumb);
+            }
+
+             return _context.Users.AnyAsync(u => u.PhoneNumb == phoneNumb && u.UserId != userId);
         }
     }
 }

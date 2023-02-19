@@ -10,16 +10,14 @@ namespace ShoelessJoeAPI.Core.Interfaces
 
         public Task<CoreUser> GetUserByEmailAsync(string email);
 
-        public Task<bool> AddUserAsync(CoreUser user);
+        public Task AddUserAsync(CoreUser user);
 
-        public Task<bool> UpdateUserAsync(CoreUser user, int id);
+        public Task UpdateUserAsync(CoreUser user, int id);
 
         public Task<bool> UserExistsByIdAsync(int id);
 
-        public Task<bool> UserExistsByEmailAsync(string email);
+        public Task<bool> UserExistsByEmailAsync(string email, int? userId = null);
 
-        public Task<bool> UserExistsByPhoneNumbAsync(string phoneNumb);
-
-        public Task SaveAsync();
+        public Task<bool> UserExistsByPhoneNumbAsync(string phoneNumb, int? userId = null);        
     }
 }
