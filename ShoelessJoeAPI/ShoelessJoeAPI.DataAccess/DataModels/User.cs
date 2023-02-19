@@ -28,5 +28,7 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
         public string PhoneNumb { get; set; }
         public bool IsAdmin { get; set; } = false;
 
+        public List<Shoe> SoldToShoes { get; set; }
+        public List<Manufacter> Manufacters { get; set; }
     }
 }

@@ -17,6 +17,18 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
             }
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Shoe>(enttiy =>
+            {
+                enttiy.Property(e => e.IsSold)
+                .HasDefaultValue(false);
+            });
+        }
+
         public DbSet<User> Users { get; set; }
+        public DbSet<Shoe> Shoes { get; set; }
+        public DbSet<Manufacter> Manufacters { get; set; }
+        public DbSet<Model> Models { get; set; }
     }
 }
