@@ -1,5 +1,8 @@
 ﻿using ShoelessJoeAPI.App.ApiModels;
+using ShoelessJoeAPI.App.ApiModels.PartialModels;
+using ShoelessJoeAPI.App.ApiModels.PostModels;
 using ShoelessJoeAPI.Core.CoreModels;
+using ShoelessJoeAPI.Core.CoreModels.PartialModels;
 using ShoelessJoeAPI.DataAccess.DataModels;
 
 namespace ShoelessJoeAPI.App
@@ -43,6 +46,45 @@ namespace ShoelessJoeAPI.App
                 PhoneNumb = user.PhoneNumb,
                 IsAdmin = user.IsAdmin,
                 Password = showPassword ? user.Password : ""
+            };
+        }
+
+        public static ApiManufacter MapManufacter(CoreManufacter manufacter)
+        {
+            return new ApiManufacter
+            {
+                ManufacterId = manufacter.ManufacterId,
+                ManufacterName = manufacter.ManufacterName,
+                UserId = manufacter.User.UserId,
+                FirstName = manufacter.User.FirstName,
+                LastName = manufacter.User.LastName,
+            };
+        }
+
+        public static CoreManufacter MapManufacter(PostManufacter manufacter)
+        {
+            return new CoreManufacter
+            {
+                ManufacterName = manufacter.ManufacterName,
+                UserId = manufacter.UserId
+            };
+        }
+
+        public static ApiManufacterDropDown MapManufacterDropDown(CoreManufacter manufacter)
+        {
+            return new ApiManufacterDropDown
+            {
+                ManufacterId = manufacter.ManufacterId,
+                ManufacterName = manufacter.ManufacterName
+            };
+        }
+
+        public static ApiManufacterDropDown MapManufacter(CoreManufacterDropDown dropDown)
+        {
+            return new ApiManufacterDropDown
+            {
+                ManufacterId = dropDown.ManufacterId,
+                ManufacterName = dropDown.ManufacterName
             };
         }
     }
