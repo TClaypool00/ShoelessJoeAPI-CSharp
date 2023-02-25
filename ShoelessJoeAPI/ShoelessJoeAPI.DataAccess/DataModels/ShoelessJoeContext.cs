@@ -24,6 +24,12 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
                 enttiy.Property(e => e.IsSold)
                 .HasDefaultValue(false);
             });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.Property(e => e.IsAdmin)
+                .HasDefaultValue(false);
+            });
         }
 
         public DbSet<User> Users { get; set; }
