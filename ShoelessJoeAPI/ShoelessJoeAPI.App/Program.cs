@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ShoelessJoeContext>(options => options.UseMySql(SecretConfig.ConnectionString, new MySqlServerVersion(SecretConfig.Version)));
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IManufacterService, ManufacterService>();
 
 var app = builder.Build();
 
