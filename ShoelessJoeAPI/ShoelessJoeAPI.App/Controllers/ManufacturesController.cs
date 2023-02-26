@@ -152,9 +152,83 @@ namespace ShoelessJoeAPI.App.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(ApiManufacter), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> PutManufacterAsync(int id, [FromBody] PostManufacter manufacter)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (await _service.ManufacterExistsByUserId(id, manufacter.UserId))
+                    {
+                        if (!await _service.ManufacterExistByName(manufacter.ManufacterName, manufacter.UserId))
+                        {
+                            var coreManufacter = ApiMapper.MapManufacter(manufacter);
+
+                            coreManufacter = await _service.UpdateManufacter(coreManufacter, id);
+
+                            return Ok(ApiMapper.MapManufacter(coreManufacter));
+                        }
+                        else
+                        {
+                            return BadRequest(ManufacterNameExists(manufacter.ManufacterName));
+                        }
+                    }
+                    else
+                    {
+                        return NotFound(ManufacterNotFoundMessage(id));
+                    }
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception e)
+            {
+                FileWriter.WriteError(e, this);
+                return StatusCode(500, ErrorMessage);
+            }
+        }
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> DeleteManufacterAsync(int id)
+        {
+            try
+            {
+                if (await _service.ManufacterExistsById(id))
+                {
+                    await _service.DeleteManufacterAsync(id);
+
+                    return Ok("Manufacter has been deleted");
+                }
+                else
+                {
+                    return NotFound(ManufacterNotFoundMessage(id));
+                }
+            }
+            catch (Exception e)
+            {
+                FileWriter.WriteError(e, this);
+                return StatusCode(500, ErrorMessage);
+            }
+        }
+
         public static string ManufacterNotFoundMessage(int id)
         {
             return $"A manufacter with an id of {id} cannot be found";
+        }
+
+        public static string ManufacterNameExists(string name)
+        {
+            return $"A manufacter with name {name} already exists";
         }
     }
 }

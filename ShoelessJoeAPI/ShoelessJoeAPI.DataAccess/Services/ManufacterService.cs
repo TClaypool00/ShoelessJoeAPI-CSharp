@@ -30,9 +30,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
 
         public async Task DeleteManufacterAsync(int id)
         {
-            var dataManufacter = await GetDataManufacter(id);
-
-            _context.Manufacters.Remove(dataManufacter);
+            _context.Manufacters.Remove(await _context.Manufacters.FindAsync(id));
 
             await SaveAsync();
         }
@@ -45,6 +43,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
         public async Task<List<CoreManufacter>> GetManufactersAsync(int? userId = null, int? index = null)
         {
             index ??= 1;
+            int skipNumber = (index > 1) ? (int)index : 0;
 
             List<Manufacter> manufacters;
             var coreManufacters = new List<CoreManufacter>();
@@ -63,7 +62,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
                     }
                 })
                 .Take(10)
-                .Skip((int)index * 10)                
+                .Skip(skipNumber)                
                 .ToListAsync();
             } 
             else
@@ -80,7 +79,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
                     }
                 })
                 .Take(10)
-                .Skip((int)index * 10)
+                .Skip(skipNumber)
                 .Where(m => m.ManufacterId == userId)
                 .ToListAsync();
             }
@@ -103,12 +102,16 @@ namespace ShoelessJoeAPI.DataAccess.Services
 
         public async Task<CoreManufacter> UpdateManufacter(CoreManufacter manufacter, int id)
         {
-            var currentManufacter = GetDataManufacter(id);
-            var newManufacter = Mapper.MapManufacter(manufacter);
+            var dataManufacter = await GetDataManufacter(id);
 
-            _context.Entry(currentManufacter).CurrentValues.SetValues(newManufacter);
+            dataManufacter.ManufacterName = manufacter.ManufacterName;
+
+            _context.Manufacters.Update(dataManufacter);
 
             await SaveAsync();
+
+            manufacter.ManufacterId = id;
+            manufacter.User = Mapper.MapUser(dataManufacter.User);
 
             return manufacter;
         }
@@ -144,6 +147,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
         public async Task<List<CoreManufacterDropDown>> GetCoreManufacterDropDown(int userId, int? index = null)
         {
             index ??= 1;
+            int skipNumber = (index > 1) ? (int)index : 0;
 
             var coreManufacters = new List<CoreManufacterDropDown>();
 
@@ -155,7 +159,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
             })
             .Where(u => u.UserId == userId)
             .Take(10)
-            .Skip((int)index * 10)
+            .Skip(skipNumber)
             .ToListAsync();
 
             for (int i = 0; i < manufacters.Count; i++)
