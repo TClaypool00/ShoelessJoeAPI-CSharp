@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.App.FileIO;
 using ShoelessJoeAPI.Core.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ShoelessJoeAPI.App.Controllers
 {
@@ -10,12 +14,12 @@ namespace ShoelessJoeAPI.App.Controllers
     public class UsersController : ControllerHelper
     {
         private readonly IUserService _service;
-        private readonly ILogger<UsersController> _logger;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(IUserService service, ILogger<UsersController> logger)
+        public UsersController(IUserService service, IConfiguration configuration)
         {
             _service = service;
-            _logger = logger;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -35,7 +39,6 @@ namespace ShoelessJoeAPI.App.Controllers
                 if (coreUsers.Count > 0)
                 {
                     var apiUsers = new List<ApiUser>();
-                    _logger.LogInformation("Getting all users");
 
                     for (int i = 0; i < coreUsers.Count; i++)
                     {
@@ -184,7 +187,31 @@ namespace ShoelessJoeAPI.App.Controllers
                             return BadRequest("Incorrect password");
                         }
 
-                        return Ok(ApiMapper.MapUser(coreUser));
+                        var claims = new[]
+                        {
+                            new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                            new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
+                            new Claim("UserId", coreUser.UserId.ToString()),
+                            new Claim("Email", coreUser.Email),
+                            new Claim("PhoneNumber", coreUser.PhoneNumb),
+                            new Claim("FirstName", coreUser.FirstName),
+                            new Claim("LastName", coreUser.LastName)
+                        };
+
+                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+                        var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                        var token = new JwtSecurityToken(
+                            _configuration["Jwt:Issuer"],
+                            _configuration["Jwt:Audience"],
+                            claims,
+                            expires: DateTime.UtcNow.AddHours(1),
+                            signingCredentials: signIn
+                            );
+
+                        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+                        return Ok(ApiMapper.MapUser(coreUser, jwt));
                     }
                     else
                     {

@@ -20,7 +20,7 @@ namespace ShoelessJoeAPI.DataAccess
             };
         }
 
-        public static CoreUser MapUser(User user)
+        public static CoreUser MapUser(User user, bool showPassword = false)
         {
             return new CoreUser
             {
@@ -29,7 +29,8 @@ namespace ShoelessJoeAPI.DataAccess
                 LastName = user.LastName,
                 Email = user.Email,
                 PhoneNumb = user.PhoneNumb,
-                IsAdmin = user.IsAdmin
+                IsAdmin = user.IsAdmin,
+                Password = showPassword ? user.Password : ""
             };
         }
 

@@ -49,6 +49,20 @@ namespace ShoelessJoeAPI.App
             };
         }
 
+        public static AuthUser MapUser(CoreUser user, string token)
+        {
+            return new AuthUser
+            {
+                UserId = user.UserId,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumb = user.PhoneNumb,
+                IsAdmin = user.IsAdmin,
+                Token = token
+            };
+        }
+
         public static ApiManufacter MapManufacter(CoreManufacter manufacter)
         {
             return new ApiManufacter

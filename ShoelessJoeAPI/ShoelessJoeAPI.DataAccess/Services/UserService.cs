@@ -24,7 +24,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
         {
             var dataUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-            return Mapper.MapUser(dataUser);
+            return Mapper.MapUser(dataUser, true);
         }
 
         public async Task<CoreUser> GetUserByIdAsync(int id)
