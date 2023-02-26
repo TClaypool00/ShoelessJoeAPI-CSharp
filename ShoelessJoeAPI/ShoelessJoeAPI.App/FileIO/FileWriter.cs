@@ -48,6 +48,10 @@ namespace ShoelessJoeAPI.App.FileIO
             {
                 return "User Conroller";
             }
+            else if (location is ManufacturesController)
+            {
+                return "Manufacter Controller";
+            }
 
             throw new ArgumentException("Not a valid type");
         }
