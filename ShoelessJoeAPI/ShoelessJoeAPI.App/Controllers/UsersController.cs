@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.App.FileIO;
 using ShoelessJoeAPI.Core.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace ShoelessJoeAPI.App.Controllers
@@ -26,6 +28,8 @@ namespace ShoelessJoeAPI.App.Controllers
         /// Retrieves all the users in the database and converts them to type ApiUser
         /// </summary>
         /// <returns></returns>
+
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(List<ApiUser>), 200)]
         [ProducesResponseType(404)]
@@ -57,6 +61,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ApiUser), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -82,6 +87,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -122,6 +128,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(ApiUser), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -167,6 +174,8 @@ namespace ShoelessJoeAPI.App.Controllers
                 return StatusCode(500, ErrorMessage);
             }
         }
+
+        [AllowAnonymous]
         [HttpPost("Login")]
         [ProducesResponseType(typeof(ApiUser), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -196,20 +205,26 @@ namespace ShoelessJoeAPI.App.Controllers
                             new Claim("Email", coreUser.Email),
                             new Claim("PhoneNumber", coreUser.PhoneNumb),
                             new Claim("FirstName", coreUser.FirstName),
-                            new Claim("LastName", coreUser.LastName)
+                            new Claim("LastName", coreUser.LastName),
+                            new Claim("IsAdmin", coreUser.IsAdmin.ToString())
+                        };                                               
+
+                        var tokenHandler = new JwtSecurityTokenHandler();
+
+                        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]));
+
+                        var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
+                        var tokenDescripton = new SecurityTokenDescriptor
+                        {
+                            Subject = new ClaimsIdentity(claims),
+                            Expires = DateTime.UtcNow.AddHours(1),
+                            SigningCredentials = signIn
                         };
 
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-                        var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                        var token = new JwtSecurityToken(
-                            _configuration["Jwt:Issuer"],
-                            _configuration["Jwt:Audience"],
-                            claims,
-                            expires: DateTime.UtcNow.AddHours(1),
-                            signingCredentials: signIn
-                            );
+                        var token = tokenHandler.CreateToken(tokenDescripton);
 
-                        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+                        var jwt = tokenHandler.WriteToken(token);
 
                         return Ok(ApiMapper.MapUser(coreUser, jwt));
                     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.App.ApiModels.PartialModels;
 using ShoelessJoeAPI.App.ApiModels.PostModels;
@@ -7,6 +8,7 @@ using ShoelessJoeAPI.Core.Interfaces;
 
 namespace ShoelessJoeAPI.App.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ManufacturesController : ControllerHelper
