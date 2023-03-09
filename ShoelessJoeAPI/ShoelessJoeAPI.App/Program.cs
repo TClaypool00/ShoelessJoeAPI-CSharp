@@ -5,7 +5,6 @@ using Microsoft.OpenApi.Models;
 using ShoelessJoeAPI.Core.Interfaces;
 using ShoelessJoeAPI.DataAccess.DataModels;
 using ShoelessJoeAPI.DataAccess.Services;
-using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +49,7 @@ builder.Services.AddDbContext<ShoelessJoeContext>(options => options.UseMySql(Se
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IManufacterService, ManufacterService>();
+builder.Services.AddScoped<IModelService, ModelService>();
 
 builder.Services.AddAuthentication(options =>
 {
