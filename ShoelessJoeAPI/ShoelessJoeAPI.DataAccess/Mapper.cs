@@ -78,5 +78,81 @@ namespace ShoelessJoeAPI.DataAccess
                 ManufacterName = manufacter.ManufacterName
             };
         }
+
+        public static Model MapModel(CoreModel model)
+        {
+            var dataModel = new Model
+            {
+                ModelName = model.ModelName,
+                ManufacterId = model.Manufacter.ManufacterId
+            };
+
+            if (dataModel.ModelId != 0)
+            {
+                dataModel.ModelId = model.ModelId;
+            }
+
+            return dataModel;
+        }
+
+        public static CoreModel MapModel(Model model, out CoreManufacter manufacter, out CoreUser user)
+        {
+            manufacter = null;
+            user = null;
+
+            var coreModel = new CoreModel
+            {
+                ModelId = model.ModelId,
+                ModelName = model.ModelName               
+            };
+
+            if (manufacter is not null)
+            {
+                coreModel.Manufacter = manufacter;
+            }
+            else
+            {
+                coreModel.Manufacter = MapManufacter(model.Manufacter);
+
+                if (user is null)
+                {
+                    user = coreModel.Manufacter.User;
+                }
+                else
+                {
+                    coreModel.Manufacter.User = user;
+                }
+            }
+
+            return coreModel;
+        }
+
+        public static CoreModel MapModel(Model model, CoreManufacter manufacter = null)
+        {
+            var coreModel = new CoreModel
+            {
+                ModelId = model.ModelId,
+                ModelName = model.ModelName
+            };
+
+            if (coreModel.Manufacter is not null)
+            {
+                coreModel.Manufacter = MapManufacter(model.Manufacter);
+            } else if (manufacter != null)
+            {
+                coreModel.Manufacter = manufacter;
+            }
+
+            return coreModel;
+        }
+
+        public static CoreModelDropDown MapModelDropDown(Model model)
+        {
+            return new CoreModelDropDown
+            {
+                ModelId = model.ModelId,
+                ModelName = model.ModelName
+            };
+        }
     }
 }

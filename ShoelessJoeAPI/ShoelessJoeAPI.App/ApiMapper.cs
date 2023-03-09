@@ -3,7 +3,6 @@ using ShoelessJoeAPI.App.ApiModels.PartialModels;
 using ShoelessJoeAPI.App.ApiModels.PostModels;
 using ShoelessJoeAPI.Core.CoreModels;
 using ShoelessJoeAPI.Core.CoreModels.PartialModels;
-using ShoelessJoeAPI.DataAccess.DataModels;
 
 namespace ShoelessJoeAPI.App
 {
@@ -99,6 +98,45 @@ namespace ShoelessJoeAPI.App
             {
                 ManufacterId = dropDown.ManufacterId,
                 ManufacterName = dropDown.ManufacterName
+            };
+        }
+
+        public static ApiModel MapModel(CoreModel model)
+        {
+            return new ApiModel
+            {
+                ModelId = model.ModelId,
+                ModelName = model.ModelName,
+                ManufacterId = model.Manufacter.ManufacterId,
+                ManufacterName = model.Manufacter.ManufacterName,
+                UserId = model.Manufacter.User.UserId,
+                FirstName = model.Manufacter.User.FirstName,
+                LastName = model.Manufacter.User.LastName
+            };
+        }
+
+        public static CoreModel MapModel(PostModel model, int id = 0)
+        {
+            var coreModel = new CoreModel
+            {
+                ModelName = model.ModelName,
+                ManufacterId = model.ManufacterId
+            };
+
+            if (id != 0)
+            {
+                coreModel.ModelId = id;
+            }
+
+            return coreModel;
+        }
+
+        public static ApiModelDropDown MapModelDropDown(CoreModel model)
+        {
+            return new ApiModelDropDown
+            {
+                ModelId = model.ModelId,
+                ModelName = model.ModelName
             };
         }
     }
