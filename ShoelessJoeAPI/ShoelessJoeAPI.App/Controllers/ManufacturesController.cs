@@ -232,5 +232,10 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             return $"A manufacter with name {name} already exists";
         }
+
+        public static string ManufacterNotAccessNessage()
+        {
+            return "You do not have access to this manufacter";
+        }
     }
 }
