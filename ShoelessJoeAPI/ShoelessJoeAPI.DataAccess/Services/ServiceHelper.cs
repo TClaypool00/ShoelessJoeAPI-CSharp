@@ -1,10 +1,12 @@
-﻿namespace ShoelessJoeAPI.DataAccess.Services
+﻿using ShoelessJoeAPI.DataAccess.DataModels;
+
+namespace ShoelessJoeAPI.DataAccess.Services
 {
     public class ServiceHelper
     {
         protected int _index;
 
-        public void ConfigureIndex(int? index)
+        protected void ConfigureIndex(int? index)
         {
             if (index is null || (int)index == 1)
             {
@@ -12,7 +14,7 @@
             }
             else
             {
-                _index = (int)index;
+                _index = (int)index *10;
             }
         }
     }
