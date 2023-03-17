@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.App.ApiModels.PartialModels;
 using ShoelessJoeAPI.App.ApiModels.PostModels;
-using ShoelessJoeAPI.App.FileIO;
 using ShoelessJoeAPI.Core.Interfaces;
 
 namespace ShoelessJoeAPI.App.Controllers
@@ -17,7 +16,7 @@ namespace ShoelessJoeAPI.App.Controllers
         private readonly IManufacterService _manufacterService;
         private readonly IUserService _userService;
 
-        public ModelsController(IModelService service, IManufacterService manufacterService, IUserService userService)
+        public ModelsController(IModelService service, IManufacterService manufacterService, IUserService userService) : base("Models")
         {
             _service = service;
             _manufacterService = manufacterService;
@@ -51,8 +50,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -78,8 +76,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -127,8 +124,7 @@ namespace ShoelessJoeAPI.App.Controllers
 
             } catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -169,8 +165,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 

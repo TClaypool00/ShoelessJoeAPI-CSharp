@@ -15,9 +15,8 @@ namespace ShoelessJoeAPI.App.Controllers
         private readonly IUserService _userService;
         private readonly IManufacterService _manufacturerService;
         private readonly IModelService _modelService;
-        private readonly string _location;
 
-        public ShoesController(IShoeService service, IUserService userService, IManufacterService manufacterService, IModelService modelService)
+        public ShoesController(IShoeService service, IUserService userService, IManufacterService manufacterService, IModelService modelService) : base("Shoes")
         {
             _service = service;
             _userService = userService;
@@ -62,7 +61,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ErrorMessage);
+                return InternalError(ex, _location);
             }
         }
 
@@ -96,7 +95,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception ex)
             {
-                return StatusCode(500, ErrorMessage);
+                return InternalError(ex, _location);
             }
         }
 
@@ -137,7 +136,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception ex)
             {
-                return StatusCode(500, ErrorMessage);
+                return InternalError(ex, _location);
             }
         }
 
@@ -186,7 +185,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception ex)
             {
-                return StatusCode(500, ErrorMessage);
+                return InternalError(ex, _location);
             }
         }
 
@@ -234,7 +233,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception ex)
             {
-                return StatusCode(500, ErrorMessage);
+                return InternalError(ex, _location);
             }
         }
 

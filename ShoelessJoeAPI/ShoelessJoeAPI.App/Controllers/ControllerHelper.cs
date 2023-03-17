@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
-using RTools_NTS.Util;
+using ShoelessJoeAPI.App.FileIO;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace ShoelessJoeAPI.App.Controllers
@@ -17,6 +16,13 @@ namespace ShoelessJoeAPI.App.Controllers
 
         protected JwtSecurityToken _token;
 
+        protected string _location;
+
+
+        public ControllerHelper(string location)
+        {
+            _location = location;
+        }
 
         protected void ExtractToken()
         {
@@ -40,6 +46,13 @@ namespace ShoelessJoeAPI.App.Controllers
             {
                 _token = null;
             }
+        }
+
+        protected ActionResult InternalError(Exception exception, string location)
+        {
+            FileWriter.WriteError(exception, location);
+
+            return StatusCode(500, ErrorMessage)
         }
     }
 }

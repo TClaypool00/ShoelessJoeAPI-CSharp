@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using ShoelessJoeAPI.App.ApiModels;
-using ShoelessJoeAPI.App.FileIO;
 using ShoelessJoeAPI.Core.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace ShoelessJoeAPI.App.Controllers
@@ -18,7 +16,7 @@ namespace ShoelessJoeAPI.App.Controllers
         private readonly IUserService _service;
         private readonly IConfiguration _configuration;
 
-        public UsersController(IUserService service, IConfiguration configuration)
+        public UsersController(IUserService service, IConfiguration configuration) : base("Users")
         {
             _service = service;
             _configuration = configuration;
@@ -56,8 +54,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -82,8 +79,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch(Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -123,8 +119,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -170,8 +165,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -240,8 +234,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 

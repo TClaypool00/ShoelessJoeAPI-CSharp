@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.App.ApiModels.PartialModels;
 using ShoelessJoeAPI.App.ApiModels.PostModels;
-using ShoelessJoeAPI.App.FileIO;
 using ShoelessJoeAPI.Core.Interfaces;
 
 namespace ShoelessJoeAPI.App.Controllers
@@ -16,7 +15,7 @@ namespace ShoelessJoeAPI.App.Controllers
         private readonly IManufacterService _service;
         private readonly IUserService _userService;
 
-        public ManufacturesController(IManufacterService service, IUserService userService)
+        public ManufacturesController(IManufacterService service, IUserService userService) : base("Maufacters")
         {
             _service = service;
             _userService = userService;
@@ -48,8 +47,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -73,8 +71,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -108,8 +105,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -149,8 +145,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 
@@ -192,8 +187,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
         [HttpDelete("{id}")]
@@ -218,8 +212,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                FileWriter.WriteError(e, this);
-                return StatusCode(500, ErrorMessage);
+                return InternalError(e, _location);
             }
         }
 

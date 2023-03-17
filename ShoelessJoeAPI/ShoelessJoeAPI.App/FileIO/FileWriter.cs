@@ -7,15 +7,21 @@ namespace ShoelessJoeAPI.App.FileIO
     {
         private static string _path = "";
 
-        public static void WriteError(Exception exception, object location)
+        public static void WriteError(Exception exception, string location)
         {
+            if (!Directory.Exists(SecretConfig.ErrorPath))
+            {
+                Directory.CreateDirectory(SecretConfig.ErrorPath);
+            }
+
             _path = SecretConfig.ErrorPath + GenerateFileName();
 
             if (!File.Exists(_path))
             {
                 using StreamWriter sw = File.CreateText(_path);
                 WriteError(sw, exception, location);
-            } else
+            }
+            else
             {
                 using StreamWriter sw = File.AppendText(_path);
                 WriteError(sw, exception, location);
@@ -27,33 +33,34 @@ namespace ShoelessJoeAPI.App.FileIO
             return "Error_file_" + DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
         }
 
-        private static void WriteError(StreamWriter writer, Exception exception, object location)
+        private static void WriteError(StreamWriter writer, Exception exception, string location)
         {
-            writer.WriteLine(DateTime.Now.ToString("F"));
-            writer.WriteLine($"Location: {GetLocation(location)}");
-            writer.WriteLine();
-            writer.WriteLine($"Message: {exception.Message}");
-            writer.WriteLine($"Source: {exception.Source}");
-            writer.WriteLine($"Stack Trace: {exception.StackTrace}");
-            writer.WriteLine();
-            writer.WriteLine();
-            writer.WriteLine("====================================================");
-            writer.WriteLine();
-            writer.WriteLine();
+            if (ValidateLocation(location))
+            {
+                writer.WriteLine(DateTime.Now.ToString("F"));
+                writer.WriteLine($"Location: ${location} Controller");
+                writer.WriteLine();
+                writer.WriteLine($"Message: {exception.Message}");
+                writer.WriteLine($"Source: {exception.Source}");
+                writer.WriteLine($"Stack Trace: {exception.StackTrace}");
+                writer.WriteLine();
+                writer.WriteLine();
+                writer.WriteLine("====================================================");
+                writer.WriteLine();
+                writer.WriteLine();
+            }
         }
 
-        private static string GetLocation(object location)
+        private static bool ValidateLocation(string location)
         {
-            if (location is UsersController)
+            return location switch
             {
-                return "User Conroller";
-            }
-            else if (location is ManufacturesController)
-            {
-                return "Manufacter Controller";
-            }
-
-            throw new ArgumentException("Not a valid type");
+                "Users" => true,
+                "Shoes" => true,
+                "Models" => true,
+                "Manufacters" => true,
+                _ => throw new ArgumentException("Not a valid exception"),
+            };
         }
     }
 }
