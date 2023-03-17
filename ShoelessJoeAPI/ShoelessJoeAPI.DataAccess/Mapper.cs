@@ -84,7 +84,7 @@ namespace ShoelessJoeAPI.DataAccess
             var dataModel = new Model
             {
                 ModelName = model.ModelName,
-                ManufacterId = model.Manufacter.ManufacterId
+                ManufacterId = model.ManufacterId
             };
 
             if (dataModel.ModelId != 0)
@@ -135,7 +135,7 @@ namespace ShoelessJoeAPI.DataAccess
                 ModelName = model.ModelName
             };
 
-            if (coreModel.Manufacter is not null)
+            if (model.Manufacter is not null)
             {
                 coreModel.Manufacter = MapManufacter(model.Manufacter);
             } else if (manufacter != null)
@@ -153,6 +153,45 @@ namespace ShoelessJoeAPI.DataAccess
                 ModelId = model.ModelId,
                 ModelName = model.ModelName
             };
+        }
+
+        public static Shoe MapShoe(CoreShoe shoe)
+        {
+            var dataShoe = new Shoe
+            {
+                LeftSize = shoe.LeftSize,
+                RightSize = shoe.RightSize,
+                DatePosted = shoe.DatePosted,
+                IsSold = shoe.IsSold,
+                ModelId = shoe.ModelId,
+                //SoldToId = shoe.SoldToId
+            };
+
+            if (shoe.ShoeId != 0)
+            {
+                dataShoe.ShoeId = shoe.ShoeId;
+            }
+
+            return dataShoe;
+        }
+
+        public static CoreShoe MapShoe(Shoe shoe)
+        {
+            var coreShoe = new CoreShoe
+            {
+                ShoeId = shoe.ShoeId,
+                LeftSize = shoe.LeftSize,
+                RightSize = shoe.RightSize,
+                DatePosted = shoe.DatePosted,
+                IsSold = shoe.IsSold,
+            };
+
+            if (shoe.Model is not null)
+            {
+                coreShoe.Model = MapModel(shoe.Model);
+            }
+
+            return coreShoe;
         }
     }
 }
