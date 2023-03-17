@@ -6,10 +6,37 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ShoelessJoeAPI.DataAccess.Migrations
 {
-    public partial class AddedShoeModelManufacter : Migration
+    public partial class StartOver : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    FirstName = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    LastName = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Password = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PhoneNumb = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsAdmin = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserId);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "Manufacters",
                 columns: table => new
@@ -60,13 +87,13 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                 {
                     ShoeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    RightSize = table.Column<double>(type: "double", nullable: true, defaultValue: null),
-                    LeftSize = table.Column<double>(type: "double", nullable: true, defaultValue : null),
+                    RightSize = table.Column<double>(type: "double", nullable: true),
+                    LeftSize = table.Column<double>(type: "double", nullable: true),
                     DatePosted = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    IsSold = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    IsSold = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
                     ModelId = table.Column<int>(type: "int", nullable: false),
-                    SoldToUserUserId = table.Column<int>(type: "int", nullable: true, defaultValue: null)
+                    SoldToUserUserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -116,6 +143,9 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Manufacters");
+
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

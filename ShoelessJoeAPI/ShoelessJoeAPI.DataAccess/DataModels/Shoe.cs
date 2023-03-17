@@ -24,7 +24,7 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
         public int ModelId { get; set; }
         public Model Model { get; set; }
 
-        public int? SoldToId { get; set; } = null;
+
         public User SoldToUser { get; set; }
     }
 }

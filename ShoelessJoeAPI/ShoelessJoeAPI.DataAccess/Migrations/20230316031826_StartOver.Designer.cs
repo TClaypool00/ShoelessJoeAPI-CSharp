@@ -11,8 +11,8 @@ using ShoelessJoeAPI.DataAccess.DataModels;
 namespace ShoelessJoeAPI.DataAccess.Migrations
 {
     [DbContext(typeof(ShoelessJoeContext))]
-    [Migration("20230219215730_AddedDefaultValueIsSold")]
-    partial class AddedDefaultValueIsSold
+    [Migration("20230316031826_StartOver")]
+    partial class StartOver
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -87,9 +87,6 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.Property<double?>("RightSize")
                         .HasColumnType("double");
 
-                    b.Property<int?>("SoldToId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("SoldToUserUserId")
                         .HasColumnType("int");
 
@@ -119,7 +116,9 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<bool>("IsAdmin")
-                        .HasColumnType("tinyint(1)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("LastName")
                         .IsRequired()

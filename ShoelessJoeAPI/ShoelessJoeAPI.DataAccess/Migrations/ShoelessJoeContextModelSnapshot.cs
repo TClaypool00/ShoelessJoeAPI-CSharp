@@ -85,9 +85,6 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.Property<double?>("RightSize")
                         .HasColumnType("double");
 
-                    b.Property<int?>("SoldToId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("SoldToUserUserId")
                         .HasColumnType("int");
 
