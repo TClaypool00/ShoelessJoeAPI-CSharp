@@ -98,7 +98,7 @@ namespace ShoelessJoeAPI.App.Controllers
                     {
                         if (await _manufacterService.ManufacterExistsByUserId(model.ManufacterId, model.UserId))
                         {
-                            if (await _manufacterService.ManufacterExistByName(model.ModelName, model.UserId))
+                            if (!await _service.ModelNameExistsAsync(model.ModelName, model.UserId))
                             {
                                 var coreModel = ApiMapper.MapModel(model);
                                 coreModel = await _service.AddModelAsync(coreModel);
