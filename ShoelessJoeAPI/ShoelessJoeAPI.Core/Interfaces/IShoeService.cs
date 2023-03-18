@@ -10,14 +10,10 @@ namespace ShoelessJoeAPI.Core.Interfaces
 
         public Task AddShoeAsync(CoreShoe shoe);
 
-        public Task SellShoeAsync(int id, int soldToUserId);
-
         public Task<CoreShoe> UpdateShoeAsync(CoreShoe shoe, int id);
 
         public Task<bool> ShoeExistsById(int id);
 
         public Task<bool> ShoeIsOwnedByUser(int id, int owner);
-
-        public bool ShoeIsAlreadySold(int id);
     }
 }

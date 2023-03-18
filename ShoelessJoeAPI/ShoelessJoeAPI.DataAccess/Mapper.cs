@@ -162,9 +162,7 @@ namespace ShoelessJoeAPI.DataAccess
                 LeftSize = shoe.LeftSize,
                 RightSize = shoe.RightSize,
                 DatePosted = shoe.DatePosted,
-                IsSold = shoe.IsSold,
-                ModelId = shoe.ModelId,
-                //SoldToId = shoe.SoldToId
+                ModelId = shoe.ModelId
             };
 
             if (shoe.ShoeId != 0)
@@ -182,8 +180,7 @@ namespace ShoelessJoeAPI.DataAccess
                 ShoeId = shoe.ShoeId,
                 LeftSize = shoe.LeftSize,
                 RightSize = shoe.RightSize,
-                DatePosted = shoe.DatePosted,
-                IsSold = shoe.IsSold,
+                DatePosted = shoe.DatePosted
             };
 
             if (shoe.Model is not null)

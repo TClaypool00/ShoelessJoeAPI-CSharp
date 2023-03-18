@@ -58,11 +58,6 @@ namespace ShoelessJoeAPI.DataAccess.Services
                     shoes = shoes.Where(b => b.DatePosted ==  datePosted).ToList();
                 }
 
-                if (isSold is not null)
-                {
-                    shoes = shoes.Where(c => c.IsSold == isSold).ToList();
-                }
-
                 if (shoes.Count > 0)
                 {
                     for (int i = 0; i < shoes.Count; i++)
@@ -103,23 +98,6 @@ namespace ShoelessJoeAPI.DataAccess.Services
             return shoe;
         }
 
-        public async Task SellShoeAsync(int id, int soldToUserId)
-        {
-            var dataShoe = await _context.Shoes.FindAsync(id);
-            dataShoe.IsSold = true;
-            dataShoe.SoldToUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == soldToUserId);
-
-            _context.Shoes.Update(dataShoe);
-
-            await SaveAsync();
-        }
-
-        public bool ShoeIsAlreadySold(int id)
-        {
-            return _context.Shoes
-                .FirstOrDefaultAsync(a => a.ShoeId == id).Result.IsSold;
-        }
-
         private async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
@@ -133,7 +111,6 @@ namespace ShoelessJoeAPI.DataAccess.Services
                     ShoeId = a.ShoeId,
                     LeftSize = a.LeftSize,
                     RightSize = a.RightSize,
-                    IsSold = a.IsSold,
                     DatePosted = a.DatePosted,
                     Model = new Model
                     {
