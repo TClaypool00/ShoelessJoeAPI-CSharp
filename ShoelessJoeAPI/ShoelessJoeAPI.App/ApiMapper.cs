@@ -147,7 +147,7 @@ namespace ShoelessJoeAPI.App
                 ShoeId = shoe.ShoeId,
                 LeftSize = shoe.LeftSize,
                 RightSize = shoe.RightSize,
-                IsSold = shoe.IsSold,
+                //IsSold = shoe.IsSold,
                 UserId = shoe.Model.Manufacter.User.UserId,
                 FirstName = shoe.Model.Manufacter.User.FirstName,
                 LastName = shoe.Model.Manufacter.User.LastName,
@@ -156,19 +156,6 @@ namespace ShoelessJoeAPI.App
                 ModelId = shoe.Model.ModelId,
                 ModelName = shoe.Model.ModelName
             };
-
-            try
-            {                
-                apiShoe.SoldToUserId = shoe.SoldToUser.UserId;
-                apiShoe.SoldToFirstName = shoe.SoldToUser.FirstName;
-                apiShoe.SoldToLastName = shoe.SoldToUser.LastName;
-
-            } catch (NullReferenceException)
-            {
-                apiShoe.SoldToUserId = null;
-                apiShoe.SoldToFirstName = null;
-                apiShoe.SoldToLastName = null;
-            }
 
             return apiShoe;
         }
