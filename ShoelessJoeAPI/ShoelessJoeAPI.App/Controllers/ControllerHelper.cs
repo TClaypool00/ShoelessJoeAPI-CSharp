@@ -52,7 +52,7 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             FileWriter.WriteError(exception, location);
 
-            return StatusCode(500, ErrorMessage)
+            return StatusCode(500, ErrorMessage);
         }
     }
 }
