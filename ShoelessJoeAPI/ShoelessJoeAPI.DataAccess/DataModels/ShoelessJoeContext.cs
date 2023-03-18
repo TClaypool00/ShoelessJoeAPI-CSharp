@@ -19,7 +19,7 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Shoe>(enttiy =>
+            modelBuilder.Entity<PotentialBuy>(enttiy =>
             {
                 enttiy.Property(e => e.IsSold)
                 .HasDefaultValue(false);
@@ -30,11 +30,6 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
                 entity.Property(e => e.IsAdmin)
                 .HasDefaultValue(false);
             });
-
-            modelBuilder.Entity<Shoe>()
-                .HasOne(e => e.SoldToUser)
-                .WithMany(e => e.SoldToShoes)
-                .IsRequired(false);
         }
 
         public DbSet<User> Users { get; set; }

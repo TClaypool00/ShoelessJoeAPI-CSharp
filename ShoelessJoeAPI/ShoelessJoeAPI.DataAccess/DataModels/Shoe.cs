@@ -18,13 +18,9 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public DateTime DatePosted { get; set; }
 
-        [Required]
-        public bool IsSold { get; set; } = false;
-
         public int ModelId { get; set; }
         public Model Model { get; set; }
 
-
-        public User SoldToUser { get; set; }
+        public List<PotentialBuy> PotentialBuys { get; set; }
     }
 }

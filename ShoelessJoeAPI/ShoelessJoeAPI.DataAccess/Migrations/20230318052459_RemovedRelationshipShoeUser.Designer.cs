@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShoelessJoeAPI.DataAccess.DataModels;
 
@@ -10,44 +11,15 @@ using ShoelessJoeAPI.DataAccess.DataModels;
 namespace ShoelessJoeAPI.DataAccess.Migrations
 {
     [DbContext(typeof(ShoelessJoeContext))]
-    partial class ShoelessJoeContextModelSnapshot : ModelSnapshot
+    [Migration("20230318052459_RemovedRelationshipShoeUser")]
+    partial class RemovedRelationshipShoeUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Comment", b =>
-                {
-                    b.Property<int>("CommentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("CommentText")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("DatePosted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("PotentialBuyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CommentId");
-
-                    b.HasIndex("PotentialBuyId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comment");
-                });
 
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Manufacter", b =>
                 {
@@ -91,35 +63,6 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.ToTable("Models");
                 });
 
-            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.PotentialBuy", b =>
-                {
-                    b.Property<int>("PotentialBuyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DateSold")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsSold")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("PotentialBuyerUserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ShoeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PotentialBuyId");
-
-                    b.HasIndex("PotentialBuyerUserId");
-
-                    b.HasIndex("ShoeId");
-
-                    b.ToTable("PotentialBuy");
-                });
-
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Shoe", b =>
                 {
                     b.Property<int>("ShoeId")
@@ -129,6 +72,11 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.Property<DateTime>("DatePosted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsSold")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
 
                     b.Property<double?>("LeftSize")
                         .HasColumnType("double");
@@ -187,25 +135,6 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Comment", b =>
-                {
-                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.PotentialBuy", "PotentialBuy")
-                        .WithMany("Comments")
-                        .HasForeignKey("PotentialBuyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.User", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PotentialBuy");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Manufacter", b =>
                 {
                     b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.User", "User")
@@ -226,25 +155,6 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Manufacter");
-                });
-
-            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.PotentialBuy", b =>
-                {
-                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.User", "PotentialBuyer")
-                        .WithMany("PotentialBuys")
-                        .HasForeignKey("PotentialBuyerUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.Shoe", "Shoe")
-                        .WithMany("PotentialBuys")
-                        .HasForeignKey("ShoeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PotentialBuyer");
-
-                    b.Navigation("Shoe");
                 });
 
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Shoe", b =>
@@ -268,23 +178,9 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.Navigation("Shoes");
                 });
 
-            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.PotentialBuy", b =>
-                {
-                    b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Shoe", b =>
-                {
-                    b.Navigation("PotentialBuys");
-                });
-
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.User", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Manufacters");
-
-                    b.Navigation("PotentialBuys");
                 });
 #pragma warning restore 612, 618
         }
