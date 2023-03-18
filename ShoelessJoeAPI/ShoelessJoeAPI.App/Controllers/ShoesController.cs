@@ -194,43 +194,46 @@ namespace ShoelessJoeAPI.App.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> ShoeSoldAsync(int id, [FromBody] UserIdModel soldToUserId)
+        public ActionResult ShoeSoldAsync(int id, [FromBody] UserIdModel soldToUserId)
         {
             ExtractToken();
 
             try
             {
-                if (await _service.ShoeExistsById(id))
-                {
-                    if (!_service.ShoeIsAlreadySold(id))
-                    {
-                        if (UserId != soldToUserId.UserId)
-                        {
-                            if (ModelState.IsValid)
-                            {
-                                await _service.SellShoeAsync(id, soldToUserId.UserId);
 
-                                return Ok("Shoe has been sold!");
-                            }
-                            else 
-                            { 
-                                return BadRequest(); 
-                            }
-                        }
-                        else
-                        {
-                            return BadRequest(CannotByYourOwnShoe());
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest("This is show is already sold");
-                    }
-                }
-                else
-                {
-                    return NotFound(ShoeNotFoundMessage(id));
-                }
+                throw new NotImplementedException();
+
+                //if (await _service.ShoeExistsById(id))
+                //{
+                //    if (!_service.ShoeIsAlreadySold(id))
+                //    {
+                //        if (UserId != soldToUserId.UserId)
+                //        {
+                //            if (ModelState.IsValid)
+                //            {
+                //                await _service.SellShoeAsync(id, soldToUserId.UserId);
+
+                //                return Ok("Shoe has been sold!");
+                //            }
+                //            else 
+                //            { 
+                //                return BadRequest(); 
+                //            }
+                //        }
+                //        else
+                //        {
+                //            return BadRequest(CannotByYourOwnShoe());
+                //        }
+                //    }
+                //    else
+                //    {
+                //        return BadRequest("This is show is already sold");
+                //    }
+                //}
+                //else
+                //{
+                //    return NotFound(ShoeNotFoundMessage(id));
+                //}
             } catch (Exception ex)
             {
                 return InternalError(ex, _location);
