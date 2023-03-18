@@ -21,6 +21,8 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
         public int ModelId { get; set; }
         public Model Model { get; set; }
 
+        public ShoeImage ShoeImage { get; set; }
+
         public List<PotentialBuy> PotentialBuys { get; set; }
     }
 }
