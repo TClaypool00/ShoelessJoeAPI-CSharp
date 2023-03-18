@@ -15,6 +15,8 @@
         public string PhoneNumb { get; set; }
         public bool IsAdmin { get; set; }
 
-        public List<CoreShoe> SoldToShoes { get; set; }
+        public List<CoreManufacter> Manufacters { get; set; }
+        public List<CorePotentialBuy> PotentialBuys { get; set; }
+        public List<CoreComment> Comments { get; set; }
     }
 }
