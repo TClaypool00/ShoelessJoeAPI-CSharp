@@ -13,6 +13,8 @@
         public int ModelId { get; set; }
         public CoreModel Model { get; set; }
 
+        public CoreShoeImage ShoeImage { get; set; }
+
         public List<CorePotentialBuy> PotentialBuys { get; set; }
     }
 }
