@@ -54,5 +54,10 @@ namespace ShoelessJoeAPI.App.Controllers
 
             return StatusCode(500, ErrorMessage);
         }
+
+        protected bool UserIdDoesMatch(int userId)
+        {
+            return UserId == userId;
+        }
     }
 }
