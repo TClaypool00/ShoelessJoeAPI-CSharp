@@ -36,5 +36,8 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
         public DbSet<Shoe> Shoes { get; set; }
         public DbSet<Manufacter> Manufacters { get; set; }
         public DbSet<Model> Models { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<PotentialBuy> PotentialBuys { get; set; }
+        public DbSet<ShoeImage> ShoeImages { get; set; }
     }
 }
