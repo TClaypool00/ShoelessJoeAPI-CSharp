@@ -250,9 +250,14 @@ namespace ShoelessJoeAPI.App.Controllers
             return "Both left shoe size and right shoe size cannot be empty";
         }
 
-        protected string CannotByYourOwnShoe()
+        public static string CannotByYourOwnShoe()
         {
             return "You cannot buy your own shoe(s).";
+        }
+
+        public static string ShoeIsAlreadySold()
+        {
+            return "Shoe has already been sold";
         }
     }
 }
