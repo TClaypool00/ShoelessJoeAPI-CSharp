@@ -6,7 +6,7 @@ namespace ShoelessJoeAPI.App.Controllers
 {
     public class ControllerHelper : ControllerBase
     {
-        protected string ErrorMessage { get; } = "An error has corrected";
+        protected string ErrorMessage { get; } = "An error has occured";
 
         protected string UnAuthMessage { get; } = "You do not have access to this resource";
 
