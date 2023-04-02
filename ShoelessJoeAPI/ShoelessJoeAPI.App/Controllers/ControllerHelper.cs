@@ -16,7 +16,7 @@ namespace ShoelessJoeAPI.App.Controllers
 
         protected JwtSecurityToken _token;
 
-        protected string _location;
+        protected readonly string _location;
 
 
         public ControllerHelper(string location)
