@@ -30,6 +30,21 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
                 entity.Property(e => e.IsAdmin)
                 .HasDefaultValue(false);
             });
+
+            modelBuilder.Entity<ShoeImage>(entity =>
+            {
+                entity.Property(e => e.RightShoeImage1)
+                .HasDefaultValue("");
+
+                entity.Property(e => e.RightShoeImage2)
+                .HasDefaultValue("");
+
+                entity.Property(e => e.LeftShoeImage1)
+                .HasDefaultValue("");
+
+                entity.Property(e => e.LeftShoeImage2)
+                .HasDefaultValue("");
+            });
         }
 
         public DbSet<User> Users { get; set; }

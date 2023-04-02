@@ -7,15 +7,19 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
         [Key]
         public int ShoeImageId { get; set; }
 
+        [Required]
         [MaxLength(255)]
         public string RightShoeImage1 { get; set; }
 
+        [Required]
         [MaxLength(255)]
         public string RightShoeImage2 { get; set; }
 
+        [Required]
         [MaxLength(255)]
         public string LeftShoeImage1 { get; set; }
 
+        [Required]
         [MaxLength(255)]
         public string LeftShoeImage2 { get; set;  }
 
