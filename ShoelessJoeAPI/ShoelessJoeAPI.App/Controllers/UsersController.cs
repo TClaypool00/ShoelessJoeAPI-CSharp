@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Tokens;
 using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.Core.Interfaces;
@@ -86,7 +87,7 @@ namespace ShoelessJoeAPI.App.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(List<string>) ,StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> PostUserAsync([FromBody] RegisterModel model)
         {
@@ -113,7 +114,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(DisplaysModelStateErrors());
                 }
 
             }
@@ -160,7 +161,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(DisplaysModelStateErrors());
                 }
             }
             catch (Exception e)
@@ -229,7 +230,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(DisplaysModelStateErrors());
                 }
             }
             catch (Exception e)

@@ -132,7 +132,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
                 else
                 {
-                    return BadRequest();
+                    return BadRequest(DisplaysModelStateErrors());
                 }
             } catch (Exception ex)
             {
@@ -181,7 +181,7 @@ namespace ShoelessJoeAPI.App.Controllers
                     }
                 } else
                 {
-                    return BadRequest();
+                    return BadRequest(DisplaysModelStateErrors());
                 }
                 
             } catch (Exception ex)

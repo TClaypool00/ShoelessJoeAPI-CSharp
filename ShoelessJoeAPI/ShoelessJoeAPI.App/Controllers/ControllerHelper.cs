@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.App.FileIO;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -58,6 +60,27 @@ namespace ShoelessJoeAPI.App.Controllers
         protected bool UserIdDoesMatch(int userId)
         {
             return UserId == userId;
+        }
+
+        protected List<string> DisplaysModelStateErrors()
+        {
+            var errorList = new List<string>();
+
+            var errors = ModelState.Select(e => e.Value.Errors)
+                .Where(w => w.Count > 0)
+                .ToList();
+
+            for (int i = 0; i < errors.Count; i++)
+            {
+                var errorCollection = errors[i];
+
+                for (int a = 0; a < errorCollection.Count; a++)
+                {
+                    errorList.Add(errorCollection[a].ErrorMessage);
+                }
+            }
+
+            return errorList;
         }
     }
 }
