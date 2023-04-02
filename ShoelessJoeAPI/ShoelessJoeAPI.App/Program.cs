@@ -51,6 +51,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IManufacterService, ManufacterService>();
 builder.Services.AddScoped<IModelService, ModelService>();
 builder.Services.AddScoped<IShoeService, ShoeService>();
+builder.Services.AddScoped<IPotentialBuyService, PotentialBuyService>();
 
 builder.Services.AddAuthentication(options =>
 {

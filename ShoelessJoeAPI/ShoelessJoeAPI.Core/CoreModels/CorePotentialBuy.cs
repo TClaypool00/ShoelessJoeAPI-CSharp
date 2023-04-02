@@ -13,8 +13,21 @@
 
         public bool IsSold { get; set; }
 
-        public DateTime? DateSold { get; set; } = null;
+        public DateTime? DateSoldDate { get; set; } = null;
+        public string DateSold { get; set; }
 
         public List<CoreComment> Comments { get; set; }
+
+        public CorePotentialBuy()
+        {
+            if (DateSoldDate.HasValue)
+            {
+                DateSold = DateSoldDate.Value.ToString("F");
+            }
+            else
+            {
+                DateSold = "N/A";
+            }
+        }
     }
 }

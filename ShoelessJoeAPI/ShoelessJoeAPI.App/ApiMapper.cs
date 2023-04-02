@@ -176,5 +176,54 @@ namespace ShoelessJoeAPI.App
 
             return coreShoe;
         }
+
+        public static ApiPotentialBuyModel MapPotentialBuy(CorePotentialBuy potentialBuy)
+        {
+            return new ApiPotentialBuyModel
+            {
+                PotentialBuyId = potentialBuy.PotentialBuyId,
+                IsSold = potentialBuy.IsSold,
+                ShoeImageId = potentialBuy.Shoe.ShoeImage.ShoeImageId,
+                LeftShoeImage1 = potentialBuy.Shoe.ShoeImage.LeftShoeImage1,
+                LeftShoeImage2 = potentialBuy.Shoe.ShoeImage.LeftShoeImage2,
+                RightShoeImage1 = potentialBuy.Shoe.ShoeImage.RightShoeImage1,
+                RightShoeImage2 = potentialBuy.Shoe.ShoeImage.RightShoeImage2,
+                ShoeId = potentialBuy.Shoe.ShoeId,
+                LeftSize = potentialBuy.Shoe.LeftSize,
+                RightSize = potentialBuy.Shoe.RightSize,
+                ModelId = potentialBuy.Shoe.Model.ModelId,
+                ModelName = potentialBuy.Shoe.Model.ModelName,
+                ManufacterId = potentialBuy.Shoe.Model.Manufacter.ManufacterId,
+                ManufacterName = potentialBuy.Shoe.Model.Manufacter.ManufacterName,
+                BuyerId = potentialBuy.PotentialBuyer.UserId,
+                BuyerFirstName = potentialBuy.PotentialBuyer.FirstName,
+                BuyerLastName = potentialBuy.PotentialBuyer.LastName
+            };
+        }
+
+        public static CorePotentialBuy MapPotentialBuy(PostPotentialBuyModel potentialBuy)
+        {
+            return new CorePotentialBuy
+            {
+                DateSoldDate = null,
+                IsSold = false,
+                PotentialBuyerUserId = potentialBuy.UserId,
+                ShoeId = potentialBuy.ShoeId
+            };
+        }
+
+
+        public static ApiCommentModel MapComment(CoreComment comment)
+        {
+            return new ApiCommentModel
+            {
+                CommentId = comment.CommentId,
+                CommentText = comment.CommentText,
+                Date = comment.DatePosted.ToString(),
+                UserId = comment.User.UserId,
+                FirstName = comment.User.FirstName,
+                LastName = comment.User.LastName,
+            };
+        }
     }
 }

@@ -188,7 +188,89 @@ namespace ShoelessJoeAPI.DataAccess
                 coreShoe.Model = MapModel(shoe.Model);
             }
 
+            if (shoe.ShoeImage is not null)
+            {
+                coreShoe.ShoeImage = MapShoeImage(shoe.ShoeImage);
+            }
+
             return coreShoe;
+        }
+
+        public static PotentialBuy MapPotentialBuy(CorePotentialBuy potentialBuy)
+        {
+            var dataPotentialBuy = new PotentialBuy
+            {
+                ShoeId = potentialBuy.ShoeId,
+                PotentialBuyerUserId = potentialBuy.PotentialBuyerUserId,
+                IsSold = potentialBuy.IsSold,
+                DateSold = potentialBuy.DateSoldDate
+            };
+
+            if (potentialBuy.PotentialBuyId != 0)
+            {
+                dataPotentialBuy.PotentialBuyId = potentialBuy.PotentialBuyId;
+            }
+
+            return dataPotentialBuy;
+        }
+
+        public static CorePotentialBuy MapPotentialBuy(PotentialBuy potentialBuy)
+        {
+            var corePotentialBuy = new CorePotentialBuy
+            {
+                PotentialBuyId = potentialBuy.PotentialBuyId,
+                DateSoldDate = potentialBuy.DateSold,
+                IsSold = potentialBuy.IsSold,
+            };
+
+            if (potentialBuy.PotentialBuyer is not null)
+            {
+                corePotentialBuy.PotentialBuyer = MapUser(potentialBuy.PotentialBuyer);
+            }
+
+            if (potentialBuy.Shoe is not null)
+            {
+                corePotentialBuy.Shoe = MapShoe(potentialBuy.Shoe);
+            }
+
+            return corePotentialBuy;
+        }
+
+        public static CorePotentialBuy MapPotentialBuy(PotentialBuy potentialBuy, out CoreUser potentialBuyer, out Shoe shoe)
+        {
+            potentialBuyer = null;
+            shoe = null;
+
+            var corePotentialBuy = new CorePotentialBuy
+            {
+                PotentialBuyId = potentialBuy.PotentialBuyId,
+                DateSoldDate = potentialBuy.DateSold,
+                IsSold = potentialBuy.IsSold,
+            };
+
+            if (potentialBuy.PotentialBuyer is not null)
+            {
+                corePotentialBuy.PotentialBuyer = MapUser(potentialBuy.PotentialBuyer);
+            }
+
+            if (potentialBuy.Shoe is not null)
+            {
+                corePotentialBuy.Shoe = MapShoe(potentialBuy.Shoe);
+            }
+
+            return corePotentialBuy;
+        }
+
+        public static CoreShoeImage MapShoeImage(ShoeImage shoeImage)
+        {
+            return new CoreShoeImage
+            {
+                ShoeImageId = shoeImage.ShoeImageId,
+                LeftShoeImage1 = shoeImage.LeftShoeImage1,
+                LeftShoeImage2 = shoeImage.LeftShoeImage2,
+                RightShoeImage1 = shoeImage.RightShoeImage1,
+                RightShoeImage2 = shoeImage.RightShoeImage2
+            };
         }
     }
 }
