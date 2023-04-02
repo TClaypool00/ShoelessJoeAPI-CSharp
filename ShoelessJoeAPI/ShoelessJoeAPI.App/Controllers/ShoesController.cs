@@ -151,11 +151,11 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
-                if (await _service.ShoeExistsById(id))
+                if (ModelState.IsValid)
                 {
-                    if (await _service.ShoeIsOwnedByUser(id, UserId) || IsAdmin)
+                    if (await _service.ShoeExistsById(id))
                     {
-                        if (ModelState.IsValid)
+                        if (await _service.ShoeIsOwnedByUser(id, UserId) || IsAdmin)
                         {
                             if (!shoe.BothSizesAreNull())
                             {
@@ -169,20 +169,21 @@ namespace ShoelessJoeAPI.App.Controllers
                             {
                                 return BadRequest(BothSizesAreNullMessage());
                             }
-                        } else
+                        }
+                        else
                         {
-                            return BadRequest();
+                            return Unauthorized(UnAuthMessage);
                         }
                     }
                     else
                     {
-                        return Unauthorized(UnAuthMessage);
+                        return NotFound(ShoeNotFoundMessage(id));
                     }
-                }
-                else
+                } else
                 {
-                    return NotFound(ShoeNotFoundMessage(id));
+                    return BadRequest();
                 }
+                
             } catch (Exception ex)
             {
                 return InternalError(ex, _location);

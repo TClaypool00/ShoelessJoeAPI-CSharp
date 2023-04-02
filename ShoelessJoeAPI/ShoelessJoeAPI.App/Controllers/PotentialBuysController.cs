@@ -167,43 +167,50 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
-                if (!UserIdDoesMatch(model.UserId))
+                if (ModelState.IsValid)
                 {
-                    if (await _userService.UserExistsByIdAsync(model.UserId))
+                    if (!UserIdDoesMatch(model.UserId))
                     {
-                        if (!_service.IsShoeSoldAsync(id, model.UserId))
+                        if (await _userService.UserExistsByIdAsync(model.UserId))
                         {
-                            if (await _shoeService.ShoeExistsById(id))
+                            if (!_service.IsShoeSoldAsync(id, model.UserId))
                             {
-                                if (await _shoeService.ShoeIsOwnedByUser(id, UserId))
+                                if (await _shoeService.ShoeExistsById(id))
                                 {
-                                    await _service.SellShoeAsync(id, model.UserId);
+                                    if (await _shoeService.ShoeIsOwnedByUser(id, UserId))
+                                    {
+                                        await _service.SellShoeAsync(id, model.UserId);
 
-                                    return Ok("Shoe has been sold!");
+                                        return Ok("Shoe has been sold!");
+                                    }
+                                    else
+                                    {
+                                        return Unauthorized(UnAuthMessage);
+                                    }
                                 }
                                 else
                                 {
-                                    return Unauthorized(UnAuthMessage);
+                                    return NotFound(ShoesController.ShoeNotFoundMessage(id));
                                 }
                             }
                             else
                             {
-                                return NotFound(ShoesController.ShoeNotFoundMessage(id));
+                                return BadRequest(ShoesController.ShoeIsAlreadySold());
                             }
                         }
                         else
                         {
-                            return BadRequest(ShoesController.ShoeIsAlreadySold());
+                            return NotFound(UsersController.UserNotFoundMessage(model.UserId));
                         }
                     }
                     else
                     {
-                        return NotFound(UsersController.UserNotFoundMessage(model.UserId));
+                        return BadRequest(ShoesController.CannotByYourOwnShoe());
                     }
                 }
                 else
                 {
-                    return BadRequest(ShoesController.CannotByYourOwnShoe());
+                    return BadRequest();
                 }
             } catch (Exception ex)
             {

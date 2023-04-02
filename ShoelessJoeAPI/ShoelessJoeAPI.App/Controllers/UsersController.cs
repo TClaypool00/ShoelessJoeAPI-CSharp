@@ -92,18 +92,18 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (await _service.UserExistsByEmailAsync(model.Email))
-                {
-                    return BadRequest(EmailAlreadyExistsMessage(model.Email));
-                }
-
-                if (await _service.UserExistsByPhoneNumbAsync(model.PhoneNumb))
-                {
-                    return BadRequest(PhoneNumbExistsMessage(model.PhoneNumb));
-                }                
-
                 if (ModelState.IsValid)
                 {
+                    if (await _service.UserExistsByEmailAsync(model.Email))
+                    {
+                        return BadRequest(EmailAlreadyExistsMessage(model.Email));
+                    }
+
+                    if (await _service.UserExistsByPhoneNumbAsync(model.PhoneNumb))
+                    {
+                        return BadRequest(PhoneNumbExistsMessage(model.PhoneNumb));
+                    }
+
                     var coreUser = ApiMapper.MapUser(model);
                     coreUser.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
 
@@ -133,19 +133,19 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (await _service.UserExistsByEmailAsync(model.Email, id))
+                if (ModelState.IsValid)
                 {
-                    return BadRequest(EmailAlreadyExistsMessage(model.Email));
-                }
+                    if (await _service.UserExistsByEmailAsync(model.Email, id))
+                    {
+                        return BadRequest(EmailAlreadyExistsMessage(model.Email));
+                    }
 
-                if (await _service.UserExistsByPhoneNumbAsync(model.PhoneNumb, id))
-                {
-                    return BadRequest(PhoneNumbExistsMessage(model.PhoneNumb));
-                }
+                    if (await _service.UserExistsByPhoneNumbAsync(model.PhoneNumb, id))
+                    {
+                        return BadRequest(PhoneNumbExistsMessage(model.PhoneNumb));
+                    }
 
-                if (await _service.UserExistsByIdAsync(model.UserId))
-                {
-                    if (ModelState.IsValid)
+                    if (await _service.UserExistsByIdAsync(model.UserId))
                     {
                         var coreUser = ApiMapper.MapUser(model);
 
@@ -155,12 +155,12 @@ namespace ShoelessJoeAPI.App.Controllers
                     }
                     else
                     {
-                        return BadRequest();
+                        return NotFound(UserNotFoundMessage(id));
                     }
                 }
                 else
                 {
-                    return NotFound(UserNotFoundMessage(id));
+                    return BadRequest();
                 }
             }
             catch (Exception e)
