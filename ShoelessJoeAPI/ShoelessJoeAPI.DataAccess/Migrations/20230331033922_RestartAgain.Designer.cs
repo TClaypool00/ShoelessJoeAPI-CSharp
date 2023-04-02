@@ -11,8 +11,8 @@ using ShoelessJoeAPI.DataAccess.DataModels;
 namespace ShoelessJoeAPI.DataAccess.Migrations
 {
     [DbContext(typeof(ShoelessJoeContext))]
-    [Migration("20230316031826_StartOver")]
-    partial class StartOver
+    [Migration("20230331033922_RestartAgain")]
+    partial class RestartAgain
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,6 +20,36 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "6.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
+
+            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Comment", b =>
+                {
+                    b.Property<int>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("CommentText")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("DatePosted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("PotentialBuyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CommentId");
+
+                    b.HasIndex("PotentialBuyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
 
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Manufacter", b =>
                 {
@@ -63,6 +93,35 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.ToTable("Models");
                 });
 
+            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.PotentialBuy", b =>
+                {
+                    b.Property<int>("PotentialBuyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("DateSold")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsSold")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("PotentialBuyerUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShoeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PotentialBuyId");
+
+                    b.HasIndex("PotentialBuyerUserId");
+
+                    b.HasIndex("ShoeId");
+
+                    b.ToTable("PotentialBuys");
+                });
+
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Shoe", b =>
                 {
                     b.Property<int>("ShoeId")
@@ -73,11 +132,6 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("IsSold")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
-
                     b.Property<double?>("LeftSize")
                         .HasColumnType("double");
 
@@ -87,16 +141,44 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.Property<double?>("RightSize")
                         .HasColumnType("double");
 
-                    b.Property<int?>("SoldToUserUserId")
-                        .HasColumnType("int");
-
                     b.HasKey("ShoeId");
 
                     b.HasIndex("ModelId");
 
-                    b.HasIndex("SoldToUserUserId");
-
                     b.ToTable("Shoes");
+                });
+
+            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.ShoeImage", b =>
+                {
+                    b.Property<int>("ShoeImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("LeftShoeImage1")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("LeftShoeImage2")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("RightShoeImage1")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("RightShoeImage2")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("ShoeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShoeImageId");
+
+                    b.HasIndex("ShoeId")
+                        .IsUnique();
+
+                    b.ToTable("ShoeImages");
                 });
 
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.User", b =>
@@ -140,6 +222,25 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Comment", b =>
+                {
+                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.PotentialBuy", "PotentialBuy")
+                        .WithMany("Comments")
+                        .HasForeignKey("PotentialBuyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.User", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PotentialBuy");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Manufacter", b =>
                 {
                     b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.User", "User")
@@ -162,6 +263,25 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.Navigation("Manufacter");
                 });
 
+            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.PotentialBuy", b =>
+                {
+                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.User", "PotentialBuyer")
+                        .WithMany("PotentialBuys")
+                        .HasForeignKey("PotentialBuyerUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.Shoe", "Shoe")
+                        .WithMany("PotentialBuys")
+                        .HasForeignKey("ShoeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PotentialBuyer");
+
+                    b.Navigation("Shoe");
+                });
+
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Shoe", b =>
                 {
                     b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.Model", "Model")
@@ -170,13 +290,18 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.User", "SoldToUser")
-                        .WithMany("SoldToShoes")
-                        .HasForeignKey("SoldToUserUserId");
-
                     b.Navigation("Model");
+                });
 
-                    b.Navigation("SoldToUser");
+            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.ShoeImage", b =>
+                {
+                    b.HasOne("ShoelessJoeAPI.DataAccess.DataModels.Shoe", "Shoe")
+                        .WithOne("ShoeImage")
+                        .HasForeignKey("ShoelessJoeAPI.DataAccess.DataModels.ShoeImage", "ShoeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Shoe");
                 });
 
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Manufacter", b =>
@@ -189,11 +314,25 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.Navigation("Shoes");
                 });
 
+            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.PotentialBuy", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Shoe", b =>
+                {
+                    b.Navigation("PotentialBuys");
+
+                    b.Navigation("ShoeImage");
+                });
+
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.User", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("Manufacters");
 
-                    b.Navigation("SoldToShoes");
+                    b.Navigation("PotentialBuys");
                 });
 #pragma warning restore 612, 618
         }

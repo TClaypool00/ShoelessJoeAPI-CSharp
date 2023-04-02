@@ -46,7 +46,7 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Manufacter", b =>
@@ -117,7 +117,7 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
 
                     b.HasIndex("ShoeId");
 
-                    b.ToTable("PotentialBuy");
+                    b.ToTable("PotentialBuys");
                 });
 
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.Shoe", b =>
@@ -152,17 +152,21 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("LeftShoeImage1")
-                        .HasColumnType("longblob");
+                    b.Property<string>("LeftShoeImage1")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<byte[]>("LeftShoeImage2")
-                        .HasColumnType("longblob");
+                    b.Property<string>("LeftShoeImage2")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<byte[]>("RightShoeImage1")
-                        .HasColumnType("longblob");
+                    b.Property<string>("RightShoeImage1")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<byte[]>("RightShoeImage2")
-                        .HasColumnType("longblob");
+                    b.Property<string>("RightShoeImage2")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("ShoeId")
                         .HasColumnType("int");
@@ -172,7 +176,7 @@ namespace ShoelessJoeAPI.DataAccess.Migrations
                     b.HasIndex("ShoeId")
                         .IsUnique();
 
-                    b.ToTable("ShoeImage");
+                    b.ToTable("ShoeImages");
                 });
 
             modelBuilder.Entity("ShoelessJoeAPI.DataAccess.DataModels.User", b =>
