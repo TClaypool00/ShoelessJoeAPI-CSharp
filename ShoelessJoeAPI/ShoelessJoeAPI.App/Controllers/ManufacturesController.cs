@@ -47,7 +47,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception e)
             {
-                return InternalError(e, _location);
+                return InternalError(e);
             }
         }
 
@@ -71,7 +71,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                return InternalError(e, _location);
+                return InternalError(e);
             }
         }
 
@@ -105,7 +105,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                return InternalError(e, _location);
+                return InternalError(e);
             }
         }
 
@@ -145,7 +145,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                return InternalError(e, _location);
+                return InternalError(e);
             }
         }
 
@@ -187,7 +187,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                return InternalError(e, _location);
+                return InternalError(e);
             }
         }
         [HttpDelete("{id}")]
@@ -212,7 +212,7 @@ namespace ShoelessJoeAPI.App.Controllers
             }
             catch (Exception e)
             {
-                return InternalError(e, _location);
+                return InternalError(e);
             }
         }
 

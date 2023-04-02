@@ -48,9 +48,9 @@ namespace ShoelessJoeAPI.App.Controllers
             }
         }
 
-        protected ActionResult InternalError(Exception exception, string location)
+        protected ActionResult InternalError(Exception exception)
         {
-            FileWriter.WriteError(exception, location);
+            FileWriter.WriteError(exception, _location);
 
             return StatusCode(500, ErrorMessage);
         }

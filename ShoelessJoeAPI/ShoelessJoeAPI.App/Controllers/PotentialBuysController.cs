@@ -60,7 +60,7 @@ namespace ShoelessJoeAPI.App.Controllers
 
             } catch (Exception ex)
             {
-                return InternalError(ex, _location);
+                return InternalError(ex);
             }
         }
 
@@ -93,7 +93,7 @@ namespace ShoelessJoeAPI.App.Controllers
 
             } catch (Exception ex)
             {
-                return  InternalError(ex, _location);
+                return  InternalError(ex);
             }
         }
 
@@ -151,7 +151,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception ex)
             {
-                return InternalError(ex, _location);
+                return InternalError(ex);
             }
         }
 
@@ -214,7 +214,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 }
             } catch (Exception ex)
             {
-                return InternalError(ex, _location);
+                return InternalError(ex);
             }
         }
 
