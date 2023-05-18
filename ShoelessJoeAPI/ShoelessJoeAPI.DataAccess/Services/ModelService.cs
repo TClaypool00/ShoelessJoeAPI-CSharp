@@ -150,7 +150,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
 
                 for (int i = 0; i < models.Count; i++)
                 {
-                    Mapper.MapModel(models[i], out manufacter, out user);
+                    coreModels.Add(Mapper.MapModel(models[i], out manufacter, out user));
                 }
             }
 
