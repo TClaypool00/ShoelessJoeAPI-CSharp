@@ -170,7 +170,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
             return _context.Shoes.AnyAsync(s => s.ShoeId == id);
         }
 
-        public Task<bool> ShoeIsOwnedByUser(int id, int ownerId)
+        public Task<bool> ShoeIsOwnedByUserAsync(int id, int ownerId)
         {
             return _context.Shoes.AnyAsync(s => s.ShoeId == id && s.Model.Manufacter.UserId == ownerId);
         }

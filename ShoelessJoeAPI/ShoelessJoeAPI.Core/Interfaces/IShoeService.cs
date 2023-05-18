@@ -14,6 +14,6 @@ namespace ShoelessJoeAPI.Core.Interfaces
 
         public Task<bool> ShoeExistsById(int id);
 
-        public Task<bool> ShoeIsOwnedByUser(int id, int owner);
+        public Task<bool> ShoeIsOwnedByUserAsync(int id, int owner);
     }
 }

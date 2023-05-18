@@ -144,7 +144,7 @@ namespace ShoelessJoeAPI.DataAccess.Services
 
         public bool IsShoeSoldAsync(int shoeId, int userId)
         {
-            return _context.PotentialBuys.FirstOrDefaultAsync(s => s.ShoeId == shoeId && s.Shoe.Model.Manufacter.UserId ==  userId).Result.IsSold;
+            return _context.PotentialBuys.FirstOrDefaultAsync(s => s.ShoeId == shoeId && s.PotentialBuyerUserId == userId).Result.IsSold;
         }
 
         public Task<bool> PotentialBuyExistsByIdAsync(int id)
@@ -202,10 +202,10 @@ namespace ShoelessJoeAPI.DataAccess.Services
                         ShoeImage = new ShoeImage
                         {
                             ShoeImageId = s.Shoe.ShoeImage.ShoeImageId,
-                            LeftShoeImage1 = s.Shoe.ShoeImage.LeftShoeImage1 == null ? "" : s.Shoe.ShoeImage.LeftShoeImage1,
-                            LeftShoeImage2 = s.Shoe.ShoeImage.LeftShoeImage2 == null ? "" : s.Shoe.ShoeImage.LeftShoeImage2,
-                            RightShoeImage1 = s.Shoe.ShoeImage.RightShoeImage1 == null ? "" : s.Shoe.ShoeImage.RightShoeImage1,
-                            RightShoeImage2 = s.Shoe.ShoeImage.RightShoeImage2 == null ? "" : s.Shoe.ShoeImage.RightShoeImage2
+                            LeftShoeImage1 = s.Shoe.ShoeImage.LeftShoeImage1 ?? "",
+                            LeftShoeImage2 = s.Shoe.ShoeImage.LeftShoeImage2 ?? "",
+                            RightShoeImage1 = s.Shoe.ShoeImage.RightShoeImage1 ?? "",
+                            RightShoeImage2 = s.Shoe.ShoeImage.RightShoeImage2 ?? ""
                         }
                     }
 
