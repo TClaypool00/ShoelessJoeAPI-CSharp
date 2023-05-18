@@ -155,69 +155,6 @@ namespace ShoelessJoeAPI.App.Controllers
             }
         }
 
-        [HttpPut("Sell/{id}")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult> SellShoeAsync(int id, [FromBody] UserIdModel model)
-        {
-            ExtractToken();
-
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    if (!UserIdDoesMatch(model.UserId))
-                    {
-                        if (await _userService.UserExistsByIdAsync(model.UserId))
-                        {
-                            if (!_service.IsShoeSoldAsync(id, model.UserId))
-                            {
-                                if (await _shoeService.ShoeExistsById(id))
-                                {
-                                    if (await _shoeService.ShoeIsOwnedByUser(id, UserId))
-                                    {
-                                        await _service.SellShoeAsync(id, model.UserId);
-
-                                        return Ok("Shoe has been sold!");
-                                    }
-                                    else
-                                    {
-                                        return Unauthorized(UnAuthMessage);
-                                    }
-                                }
-                                else
-                                {
-                                    return NotFound(ShoesController.ShoeNotFoundMessage(id));
-                                }
-                            }
-                            else
-                            {
-                                return BadRequest(ShoesController.ShoeIsAlreadySold());
-                            }
-                        }
-                        else
-                        {
-                            return NotFound(UsersController.UserNotFoundMessage(model.UserId));
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest(ShoesController.CannotByYourOwnShoe());
-                    }
-                }
-                else
-                {
-                    return BadRequest(DisplaysModelStateErrors());
-                }
-            } catch (Exception ex)
-            {
-                return InternalError(ex);
-            }
-        }
-
         public static string BidAlreadyExists()
         {
             return $"You have already placed a bid on this shoe";
