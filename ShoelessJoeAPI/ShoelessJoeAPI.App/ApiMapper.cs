@@ -177,6 +177,17 @@ namespace ShoelessJoeAPI.App
             return coreShoe;
         }
 
+        public static CoreShoeImage MapShoeImage(PostShoeModel shoeModel)
+        {
+            return new CoreShoeImage
+            {
+                LeftShoeImage1 = shoeModel.LeftImage1,
+                LeftShoeImage2 = shoeModel.LeftImage2,
+                RightShoeImage1 = shoeModel.RightImage2,
+                RightShoeImage2 = shoeModel.RightImage2
+            };
+        }
+
         public static ApiPotentialBuyModel MapPotentialBuy(CorePotentialBuy potentialBuy)
         {
             return new ApiPotentialBuyModel
@@ -184,10 +195,10 @@ namespace ShoelessJoeAPI.App
                 PotentialBuyId = potentialBuy.PotentialBuyId,
                 IsSold = potentialBuy.IsSold,
                 ShoeImageId = potentialBuy.Shoe.ShoeImage.ShoeImageId,
-                LeftShoeImage1 = potentialBuy.Shoe.ShoeImage.LeftShoeImage1,
-                LeftShoeImage2 = potentialBuy.Shoe.ShoeImage.LeftShoeImage2,
-                RightShoeImage1 = potentialBuy.Shoe.ShoeImage.RightShoeImage1,
-                RightShoeImage2 = potentialBuy.Shoe.ShoeImage.RightShoeImage2,
+                LeftShoeImage1 = potentialBuy.Shoe.ShoeImage.LeftShoeImage1.FileName,
+                LeftShoeImage2 = potentialBuy.Shoe.ShoeImage.LeftShoeImage2.FileName,
+                RightShoeImage1 = potentialBuy.Shoe.ShoeImage.RightShoeImage1.FileName,
+                RightShoeImage2 = potentialBuy.Shoe.ShoeImage.RightShoeImage2.FileName,
                 ShoeId = potentialBuy.Shoe.ShoeId,
                 LeftSize = potentialBuy.Shoe.LeftSize,
                 RightSize = potentialBuy.Shoe.RightSize,

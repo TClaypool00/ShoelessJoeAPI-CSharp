@@ -6,6 +6,8 @@ namespace ShoelessJoeAPI.DataAccess.Services
     {
         protected int _index;
 
+        protected string _idErrorMessage = "Id cannot be 0";
+
         protected void ConfigureIndex(int? index)
         {
             if (index is null || (int)index == 1)

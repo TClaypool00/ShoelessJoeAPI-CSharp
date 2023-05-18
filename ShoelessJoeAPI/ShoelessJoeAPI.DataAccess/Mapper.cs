@@ -265,12 +265,25 @@ namespace ShoelessJoeAPI.DataAccess
         {
             return new CoreShoeImage
             {
-                ShoeImageId = shoeImage.ShoeImageId,
-                LeftShoeImage1 = shoeImage.LeftShoeImage1,
-                LeftShoeImage2 = shoeImage.LeftShoeImage2,
-                RightShoeImage1 = shoeImage.RightShoeImage1,
-                RightShoeImage2 = shoeImage.RightShoeImage2
+                ShoeImageId = shoeImage.ShoeImageId
             };
+        }
+
+        public static ShoeImage MapShoeImage(CoreShoeImage shoeImage)
+        {
+            var dataShoeImage = new ShoeImage
+            {
+                LeftShoeImage1 = shoeImage.LeftShoeImage1Path,
+                LeftShoeImage2 = shoeImage.LeftShoeImage2Path,
+                RightShoeImage1 = shoeImage.RightShoeImage1Path,
+                RightShoeImage2 = shoeImage.RightShoeImage2Path
+            };
+
+            if (shoeImage.ShoeImageId != 0)
+            {
+                dataShoeImage.ShoeImageId = shoeImage.ShoeImageId;
+            }
+            return dataShoeImage;
         }
     }
 }

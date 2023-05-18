@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.App.ApiModels.PostModels;
+using ShoelessJoeAPI.Core.CoreModels;
 using ShoelessJoeAPI.Core.Interfaces;
 
 namespace ShoelessJoeAPI.App.Controllers
@@ -104,19 +105,40 @@ namespace ShoelessJoeAPI.App.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> PostShoeAsync([FromBody] PostShoeModel shoe)
+        public async Task<ActionResult> PostShoeAsync([FromForm] PostShoeModel shoe)
         {
             ExtractToken();
 
             try
-            {                
+            {
+                if (shoe.ValidateLeftShoe())
+                {
+                    ModelState.AddModelError("RightSize", "Your must add pictures");
+                }
+
+                if (shoe.ValidateRightShoe())
+                {
+                    ModelState.AddModelError("LeftSize", "You must add pictures");
+                }
+
                 if (ModelState.IsValid)
                 {
                     if (await _modelService.ModelExistsAsync(shoe.ModelId, UserId))
                     {
                         if (!shoe.BothSizesAreNull())
                         {
-                            await _service.AddShoeAsync(ApiMapper.MapShoe(shoe));
+                            var coreShoe = ApiMapper.MapShoe(shoe);
+                            coreShoe.Model = new CoreModel
+                            {
+                                Manufacter = new CoreManufacter
+                                {
+                                    UserId = UserId
+                                }
+                            };
+
+                            coreShoe.ShoeImage = ApiMapper.MapShoeImage(shoe);
+
+                            await _service.AddShoeAsync(coreShoe);
 
                             return Ok("Shoe has been added");
                         }
@@ -145,7 +167,7 @@ namespace ShoelessJoeAPI.App.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> PutShoeAsync(int id, [FromBody] PostShoeModel shoe)
+        public async Task<ActionResult> PutShoeAsync(int id, [FromForm] PostShoeModel shoe)
         {
             ExtractToken();
 

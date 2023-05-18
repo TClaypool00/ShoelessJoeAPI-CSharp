@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using ShoelessJoeAPI.Core.CoreModels;
 using ShoelessJoeAPI.Core.Interfaces;
 using ShoelessJoeAPI.DataAccess.DataModels;
@@ -8,6 +9,9 @@ namespace ShoelessJoeAPI.DataAccess.Services
     public class ShoeService : ServiceHelper, IShoeService
     {
         private readonly ShoelessJoeContext _context;
+        private string _filePath;
+        private string _picturePath;
+        private FileStream _stream;
 
         public ShoeService(ShoelessJoeContext context)
         {
@@ -21,6 +25,90 @@ namespace ShoelessJoeAPI.DataAccess.Services
             await _context.Shoes.AddAsync(dataShoe);
 
             await SaveAsync();
+
+            if (dataShoe.ShoeId == 0)
+            {
+                throw new ArgumentException(_idErrorMessage);
+            }
+
+            _filePath = SecretConfig.PicturePath + $"User{shoe.Model.Manufacter.UserId}";
+
+            CreateDirectory();
+
+            _filePath += $"\\Shoe{dataShoe.ShoeId}";
+
+            CreateDirectory();
+
+            _filePath += "\\";
+
+
+            try
+            {
+                if (shoe.ShoeImage.LeftShoeImage1 is not null)
+                {
+                    _picturePath = GenerateFileName(shoe.ShoeImage.LeftShoeImage1, ShoePicturesTypes.LeftShoe1);
+                    using (_stream = new FileStream(CombineFileName(), FileMode.Create))
+                    {
+                        await shoe.ShoeImage.LeftShoeImage1.CopyToAsync(_stream);
+                    }
+
+                    shoe.ShoeImage.LeftShoeImage1Path = _picturePath ;
+                }
+
+                if (shoe.ShoeImage.LeftShoeImage2 is not null)
+                {
+                    _picturePath = GenerateFileName(shoe.ShoeImage.LeftShoeImage2, ShoePicturesTypes.LeftShoe2);
+                    using (_stream = new FileStream(CombineFileName(), FileMode.Create))
+                    {
+                        await shoe.ShoeImage.LeftShoeImage2.CopyToAsync(_stream);
+                    }
+
+                    shoe.ShoeImage.LeftShoeImage2Path = _picturePath ;
+                }
+
+                if (shoe.ShoeImage.RightShoeImage1 is not null)
+                {
+                    _picturePath = GenerateFileName(shoe.ShoeImage.RightShoeImage1, ShoePicturesTypes.RightShoe1);
+                    using (_stream = new FileStream(CombineFileName(), FileMode.Create))
+                    {
+                        await shoe.ShoeImage.RightShoeImage1.CopyToAsync(_stream);
+                    }
+
+                    shoe.ShoeImage.RightShoeImage1Path = _picturePath;
+                }
+
+                if (shoe.ShoeImage.RightShoeImage2 is not null)
+                {
+                    _picturePath = GenerateFileName(shoe.ShoeImage.RightShoeImage2, ShoePicturesTypes.RightShoe2);
+                    using (_stream = new FileStream(CombineFileName(), FileMode.Create))
+                    {
+                        await shoe.ShoeImage.RightShoeImage2.CopyToAsync(_stream);
+                    }
+                    
+                    shoe.ShoeImage.RightShoeImage2Path= _picturePath;
+                }
+
+            } catch (Exception)
+            {
+                _context.Shoes.Remove(dataShoe);
+                await SaveAsync();
+                throw;
+            }
+
+            var dataShoeImage = Mapper.MapShoeImage(shoe.ShoeImage);
+            dataShoeImage.Shoe = dataShoe;
+
+            await _context.ShoeImages.AddAsync(dataShoeImage);
+
+            try
+            {
+                await SaveAsync();
+            } catch (Exception)
+            {
+                _context.Shoes.Remove(dataShoe);
+                await SaveAsync();
+                throw;
+            }
         }
 
         public async Task<List<CoreShoe>> GetShoesAsync(int? ownerId = null, int? soldToId = null, DateTime? datePosted = null, bool? isSold = null, int? index = null)
@@ -129,6 +217,32 @@ namespace ShoelessJoeAPI.DataAccess.Services
                         }
                     }
                 });
-        }        
+        }
+
+        private void CreateDirectory()
+        {
+            if (!Directory.Exists(_filePath))
+            {
+                Directory.CreateDirectory(_filePath);
+            }
+        }
+
+        private static string GenerateFileName(IFormFile file, ShoePicturesTypes type)
+        {
+            return Path.GetFileNameWithoutExtension(file.FileName) + "-" + Guid.NewGuid().ToString() + "-" + type.ToString() + Path.GetExtension(file.FileName);
+        }
+
+        private string CombineFileName()
+        {
+            return _filePath + _picturePath;
+        }
+
+        public enum ShoePicturesTypes
+        {
+            LeftShoe1,
+            LeftShoe2,
+            RightShoe1,
+            RightShoe2
+        }
     }
 }

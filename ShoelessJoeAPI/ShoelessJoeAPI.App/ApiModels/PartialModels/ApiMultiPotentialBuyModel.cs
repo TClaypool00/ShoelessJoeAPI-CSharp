@@ -31,13 +31,13 @@ namespace ShoelessJoeAPI.App.ApiModels.PartialModels
 
                 if (potentialBuy.Shoe.ShoeImage.RightShoeImage1 is not null)
                 {
-                    ShoeImage = potentialBuy.Shoe.ShoeImage.RightShoeImage1;
+                    ShoeImage = potentialBuy.Shoe.ShoeImage.RightShoeImage1.FileName;
                     return;
                 }
 
                 if (potentialBuy.Shoe.ShoeImage.RightShoeImage2 is not null)
                 {
-                    ShoeImage = potentialBuy.Shoe.ShoeImage.RightShoeImage2;
+                    ShoeImage = potentialBuy.Shoe.ShoeImage.RightShoeImage2.FileName;
                     return;
                 }
             }
@@ -48,13 +48,13 @@ namespace ShoelessJoeAPI.App.ApiModels.PartialModels
 
                 if (potentialBuy.Shoe.ShoeImage.LeftShoeImage1 is not null)
                 {
-                    ShoeImage = potentialBuy.Shoe.ShoeImage.LeftShoeImage1;
+                    ShoeImage = potentialBuy.Shoe.ShoeImage.LeftShoeImage1.FileName;
                     return;
                 }
 
                 if (potentialBuy.Shoe.ShoeImage.LeftShoeImage2 is not null)
                 {
-                    ShoeImage = potentialBuy.Shoe.ShoeImage.LeftShoeImage2;
+                    ShoeImage = potentialBuy.Shoe.ShoeImage.LeftShoeImage2.FileName;
                     return;
                 }
             }
