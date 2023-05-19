@@ -88,7 +88,7 @@ namespace ShoelessJoeAPI.App.Controllers
                         return Unauthorized(UnAuthMessage);
                     }
                 } else {
-                    return NotFound($"No reseource found with an id of {id}");
+                    return NotFound();
                 }
 
             } catch (Exception ex)
@@ -113,7 +113,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 {
                     if (await _userService.UserExistsByIdAsync(model.UserId))
                     {
-                        if (UserIdDoesMatch(model.UserId) || IsAdmin)
+                        if (UserIdDoesMatch(model.UserId))
                         {
                             if (await _shoeService.ShoeExistsById(model.ShoeId))
                             {
@@ -158,6 +158,11 @@ namespace ShoelessJoeAPI.App.Controllers
         public static string BidAlreadyExists()
         {
             return $"You have already placed a bid on this shoe";
+        }
+
+        public static string PotentialBuyNotFoundMessage(int id)
+        {
+            return $"No reseource found with an id of {id}";
         }
     }
 }
