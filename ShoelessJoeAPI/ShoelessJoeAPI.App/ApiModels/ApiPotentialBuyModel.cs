@@ -42,6 +42,13 @@
 
         public string OwnerLastName { get; set; }
 
+        public bool OwnsShoe { get; set; }
+
         public List<ApiCommentModel> Comments { get; set; }
+
+        public void UserOwnsShoe(int userId)
+        {
+            OwnsShoe = OwnerId == userId;
+        }
     }
 }

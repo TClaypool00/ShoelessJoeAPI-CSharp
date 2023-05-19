@@ -75,21 +75,32 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
-                if (await _service.PotentialBuyExistsByIdAsync(id))
+                if (!await _service.PotentialBuyExistsByIdAsync(id))
                 {
-                    if (await _service.UserHasAccessToPotentialBuy(UserId, id) || IsAdmin)
-                    {
-                        var corePotentialBuy = await _service.GetPotentialBuyByIdAsync(id);
-
-                        return Ok(ApiMapper.MapPotentialBuy(corePotentialBuy));
-                    }
-                    else
-                    {
-                        return Unauthorized(UnAuthMessage);
-                    }
-                } else {
-                    return NotFound();
+                    return NotFound(PotentialBuyNotFoundMessage(id));
                 }
+
+                if (!await _service.UserHasAccessToPotentialBuy(UserId, id) && !IsAdmin)
+                {
+                    return Unauthorized(UnAuthMessage);
+                }
+
+                var corePotentialBuy = await _service.GetPotentialBuyByIdAsync(id);
+                var apiPotentialBuy = ApiMapper.MapPotentialBuy(corePotentialBuy);
+
+                if (corePotentialBuy.Comments is not null)
+                {
+                    apiPotentialBuy.Comments = new List<ApiCommentModel>();
+
+                    for (int i = 0; i < corePotentialBuy.Comments.Count; i++)
+                    {
+                        apiPotentialBuy.Comments.Add(ApiMapper.MapComment(corePotentialBuy.Comments[i]));
+                    }
+                }
+
+                apiPotentialBuy.UserOwnsShoe(UserId);
+
+                return Ok(apiPotentialBuy);
 
             } catch (Exception ex)
             {

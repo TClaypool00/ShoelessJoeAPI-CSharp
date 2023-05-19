@@ -47,6 +47,27 @@ namespace ShoelessJoeAPI.DataAccess.Services
             if ((await _context.Comments.AnyAsync(a => a.PotentialBuyId == id) && (corePotentialBuy.Comments is null)))
             {
                 corePotentialBuy.Comments = new List<CoreComment>();
+                dataPotentialBuy.Comments = await _context.Comments.Select(c => new Comment
+                {
+                    CommentId = c.CommentId,
+                    CommentText = c.CommentText,
+                    DatePosted = c.DatePosted,
+                    PotentialBuyId = id,
+                    User = new User
+                    {
+                        UserId = c.User.UserId,
+                        FirstName = c.User.FirstName,
+                        LastName = c.User.LastName
+                    }
+                })
+                .Where(a => a.PotentialBuyId == id)
+                .Take(10)
+                .ToListAsync();
+
+                for (int i = 0; i < dataPotentialBuy.Comments.Count; i++)
+                {
+                    corePotentialBuy.Comments.Add(Mapper.MapComment(dataPotentialBuy.Comments[i]));
+                }
             }
 
             return corePotentialBuy;
