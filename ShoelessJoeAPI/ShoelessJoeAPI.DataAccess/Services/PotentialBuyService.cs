@@ -239,5 +239,17 @@ namespace ShoelessJoeAPI.DataAccess.Services
 
             await SaveAsync();
         }
+
+        public async Task<bool> IsShoeSoldByCommentId(int commentId, int userId)
+        {
+            int potentialBuyId = (await _context.Comments.FirstOrDefaultAsync(c => c.CommentId == commentId && c.UserId == userId)).PotentialBuyId;
+
+            return (await _context.PotentialBuys.FirstOrDefaultAsync(p => p.PotentialBuyId == potentialBuyId)).IsSold;
+        }
+
+        public async Task<bool> IsShoeSoldByPotentialBuyId(int id)
+        {
+            return (await _context.PotentialBuys.FirstOrDefaultAsync(p => p.PotentialBuyId == id)).IsSold;
+        }
     }
 }

@@ -14,11 +14,15 @@ namespace ShoelessJoeAPI.Core.Interfaces
 
         public Task<bool> PotentialBuyExistsByUserIdAsync(int userId, int shoeId);
 
-        public Task<bool> UserHasAccessToPotentialBuy(int userId, int shoeId);
+        public Task<bool> UserHasAccessToPotentialBuy(int userId, int id);
 
         public Task SellShoeAsync(int id, int userId);
 
         public bool IsShoeSoldAsync(int shoeId, int userId);
+
+        public Task<bool> IsShoeSoldByCommentId(int commentId, int userId);
+
+        public Task<bool> IsShoeSoldByPotentialBuyId(int id);
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ShoelessJoeAPI.App.ApiModels;
 using ShoelessJoeAPI.App.ApiModels.PartialModels;
 using ShoelessJoeAPI.App.ApiModels.PostModels;
+using ShoelessJoeAPI.App.ApiModels.UpdateModels;
 using ShoelessJoeAPI.Core.CoreModels;
 using ShoelessJoeAPI.Core.CoreModels.PartialModels;
 
@@ -234,6 +235,25 @@ namespace ShoelessJoeAPI.App
                 UserId = comment.User.UserId,
                 FirstName = comment.User.FirstName,
                 LastName = comment.User.LastName,
+            };
+        }
+
+        public static CoreComment MapComment(PostCommentModel comment)
+        {
+            return new CoreComment
+            {
+                CommentText = comment.CommentText,
+                UserId = comment.UserId,
+                PotentialBuyId = comment.PotentialBuyId
+            };
+        }
+
+        public static CoreComment MapComment(UpdateCommentModel comment, int id)
+        {
+            return new CoreComment
+            {
+                CommentId = id,
+                CommentText = comment.CommentText
             };
         }
     }

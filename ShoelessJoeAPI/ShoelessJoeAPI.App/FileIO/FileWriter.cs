@@ -60,7 +60,8 @@ namespace ShoelessJoeAPI.App.FileIO
                 "Models" => true,
                 "Manufacters" => true,
                 "PotentialBuys" => true,
-                _ => throw new ArgumentException("Not a valid exception"),
+                "Comments" => true,
+                _ => throw new ArgumentException("Not a valid exception")
             };
         }
     }

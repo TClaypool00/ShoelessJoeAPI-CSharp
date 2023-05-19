@@ -285,5 +285,40 @@ namespace ShoelessJoeAPI.DataAccess
             }
             return dataShoeImage;
         }
+
+        public static CoreComment MapComment(Comment comment)
+        {
+            var coreComment = new CoreComment
+            {
+                CommentId = comment.CommentId,
+                CommentText = comment.CommentText,
+                DatePosted = comment.DatePosted,
+            };
+
+            if (comment.User != null)
+            {
+                coreComment.User = MapUser(comment.User);
+            }
+
+            return coreComment;
+        }
+
+        public static Comment MapComment(CoreComment comment)
+        {
+            var dataComment = new Comment
+            {
+                CommentText = comment.CommentText,
+                DatePosted = comment.DatePosted,
+                PotentialBuyId = comment.PotentialBuyId,
+                UserId = comment.UserId
+            };
+
+            if (comment.CommentId != 0)
+            {
+                dataComment.CommentId = comment.CommentId;
+            }
+
+            return dataComment;
+        }
     }
 }
