@@ -155,6 +155,36 @@ namespace ShoelessJoeAPI.App.Controllers
             }
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeletePotentialBuyAsync(int id)
+        {
+            ExtractToken();
+
+            try
+            {
+                if (!await _service.PotentialBuyExistsByIdAsync(id))
+                {
+                    return NotFound(PotentialBuyNotFoundMessage(id));
+                }
+
+                if (!await _service.UserHasAccessToPotentialBuy(UserId, id) && !IsAdmin)
+                {
+                    return Unauthorized(UnAuthMessage);
+                }
+
+                if (await _service.DeletePotentialBuyById(id))
+                {
+                    return Ok("Bid has been deleted");
+                }
+
+                return BadRequest("Could not delete bid");
+
+            } catch (Exception ex)
+            {
+                return InternalError(ex);
+            }
+        }
+
         public static string BidAlreadyExists()
         {
             return $"You have already placed a bid on this shoe";

@@ -251,5 +251,21 @@ namespace ShoelessJoeAPI.DataAccess.Services
         {
             return (await _context.PotentialBuys.FirstOrDefaultAsync(p => p.PotentialBuyId == id)).IsSold;
         }
+
+        public async Task<bool> DeletePotentialBuyById(int id)
+        {
+            try
+            {
+                _context.Comments.RemoveRange(await _context.Comments.Where(a => a.PotentialBuyId == id).ToListAsync());
+                _context.PotentialBuys.Remove(await _context.PotentialBuys.FindAsync(id));
+
+                await SaveAsync();
+
+                return true;
+            } catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

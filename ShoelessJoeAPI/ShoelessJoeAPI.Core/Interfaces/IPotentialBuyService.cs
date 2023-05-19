@@ -24,5 +24,7 @@ namespace ShoelessJoeAPI.Core.Interfaces
 
         public Task<bool> IsShoeSoldByPotentialBuyId(int id);
 
+        public Task<bool> DeletePotentialBuyById(int id);
+
     }
 }
