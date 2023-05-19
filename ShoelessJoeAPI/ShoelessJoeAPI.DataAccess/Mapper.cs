@@ -265,7 +265,11 @@ namespace ShoelessJoeAPI.DataAccess
         {
             return new CoreShoeImage
             {
-                ShoeImageId = shoeImage.ShoeImageId
+                ShoeImageId = shoeImage.ShoeImageId,
+                LeftShoeImage1Path = shoeImage.LeftShoeImage1,
+                LeftShoeImage2Path = shoeImage.LeftShoeImage2,
+                RightShoeImage1Path = shoeImage.RightShoeImage1,
+                RightShoeImage2Path= shoeImage.RightShoeImage2
             };
         }
 

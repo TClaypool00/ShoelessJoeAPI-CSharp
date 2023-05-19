@@ -36,6 +36,12 @@
 
         public string BuyerLastName { get; set; }
 
+        public int OwnerId { get; set; }
+
+        public string OwnerFirstName { get; set; }
+
+        public string OwnerLastName { get; set; }
+
         public List<ApiCommentModel> Comments { get; set; }
     }
 }

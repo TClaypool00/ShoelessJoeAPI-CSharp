@@ -196,10 +196,10 @@ namespace ShoelessJoeAPI.App
                 PotentialBuyId = potentialBuy.PotentialBuyId,
                 IsSold = potentialBuy.IsSold,
                 ShoeImageId = potentialBuy.Shoe.ShoeImage.ShoeImageId,
-                LeftShoeImage1 = potentialBuy.Shoe.ShoeImage.LeftShoeImage1.FileName,
-                LeftShoeImage2 = potentialBuy.Shoe.ShoeImage.LeftShoeImage2.FileName,
-                RightShoeImage1 = potentialBuy.Shoe.ShoeImage.RightShoeImage1.FileName,
-                RightShoeImage2 = potentialBuy.Shoe.ShoeImage.RightShoeImage2.FileName,
+                LeftShoeImage1 = potentialBuy.Shoe.ShoeImage.LeftShoeImage1Path,
+                LeftShoeImage2 = potentialBuy.Shoe.ShoeImage.LeftShoeImage2Path,
+                RightShoeImage1 = potentialBuy.Shoe.ShoeImage.RightShoeImage1Path,
+                RightShoeImage2 = potentialBuy.Shoe.ShoeImage.RightShoeImage2Path,
                 ShoeId = potentialBuy.Shoe.ShoeId,
                 LeftSize = potentialBuy.Shoe.LeftSize,
                 RightSize = potentialBuy.Shoe.RightSize,
@@ -209,7 +209,10 @@ namespace ShoelessJoeAPI.App
                 ManufacterName = potentialBuy.Shoe.Model.Manufacter.ManufacterName,
                 BuyerId = potentialBuy.PotentialBuyer.UserId,
                 BuyerFirstName = potentialBuy.PotentialBuyer.FirstName,
-                BuyerLastName = potentialBuy.PotentialBuyer.LastName
+                BuyerLastName = potentialBuy.PotentialBuyer.LastName,
+                OwnerId = potentialBuy.Shoe.Model.Manufacter.User.UserId,
+                OwnerFirstName = potentialBuy.Shoe.Model.Manufacter.User.FirstName,
+                OwnerLastName = potentialBuy.Shoe.Model.Manufacter.User.LastName
             };
         }
 
