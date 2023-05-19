@@ -87,23 +87,19 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
-                if (await _service.ShoeExistsById(id))
-                {
-                    if (await _service.ShoeIsOwnedByUserAsync(id, UserId) || IsAdmin)
-                    {
-                        var shoe = await _service.GetShoesAsync(id);
-
-                        return Ok(ApiMapper.MapShoe(shoe));
-                    }
-                    else
-                    {
-                        return Unauthorized(UnAuthMessage);
-                    }
-                }
-                else
+                if (!await _service.ShoeExistsById(id))
                 {
                     return NotFound(ShoeNotFoundMessage(id));
                 }
+
+                if (!await _service.ShoeIsOwnedByUserAsync(id, UserId) && !IsAdmin)
+                {
+                    return Unauthorized(UnAuthMessage);
+                }
+
+                var shoe = await _service.GetShoesAsync(id);
+
+                return Ok(ApiMapper.MapShoe(shoe));
             } catch (Exception ex)
             {
                 return InternalError(ex);
@@ -121,6 +117,11 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(DisplaysModelStateErrors());
+                }
+
                 if (shoe.ValidateLeftShoe())
                 {
                     ModelState.AddModelError("RightSize", "Your must add pictures");
@@ -131,41 +132,35 @@ namespace ShoelessJoeAPI.App.Controllers
                     ModelState.AddModelError("LeftSize", "You must add pictures");
                 }
 
-                if (ModelState.IsValid)
-                {
-                    if (await _modelService.ModelExistsAsync(shoe.ModelId, UserId))
-                    {
-                        if (!shoe.BothSizesAreNull())
-                        {
-                            var coreShoe = ApiMapper.MapShoe(shoe);
-                            coreShoe.Model = new CoreModel
-                            {
-                                Manufacter = new CoreManufacter
-                                {
-                                    UserId = UserId
-                                }
-                            };
-
-                            coreShoe.ShoeImage = ApiMapper.MapShoeImage(shoe);
-
-                            await _service.AddShoeAsync(coreShoe);
-
-                            return Ok("Shoe has been added");
-                        }
-                        else
-                        {
-                            return BadRequest(BothSizesAreNullMessage());
-                        }
-                    }
-                    else
-                    {
-                        return Unauthorized(UnAuthMessage);
-                    }
-                }
-                else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
+
+                if (!await _modelService.ModelExistsAsync(shoe.ModelId, UserId))
+                {
+                    return Unauthorized(UnAuthMessage);
+                }
+
+                if (!shoe.BothSizesAreNull())
+                {
+                    return BadRequest(BothSizesAreNullMessage());
+                }
+
+                var coreShoe = ApiMapper.MapShoe(shoe);
+                coreShoe.Model = new CoreModel
+                {
+                    Manufacter = new CoreManufacter
+                    {
+                        UserId = UserId
+                    }
+                };
+
+                coreShoe.ShoeImage = ApiMapper.MapShoeImage(shoe);
+
+                await _service.AddShoeAsync(coreShoe);
+
+                return Ok("Shoe has been added");
             } catch (Exception ex)
             {
                 return InternalError(ex);
@@ -183,39 +178,32 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
-                if (ModelState.IsValid)
-                {
-                    if (await _service.ShoeExistsById(id))
-                    {
-                        if (await _service.ShoeIsOwnedByUserAsync(id, UserId) || IsAdmin)
-                        {
-                            if (!shoe.BothSizesAreNull())
-                            {
-                                var coreShoe = ApiMapper.MapShoe(shoe, id);
-
-                                coreShoe = await _service.UpdateShoeAsync(coreShoe, id);
-
-                                return Ok("Shoe has been updated!");
-                            }
-                            else
-                            {
-                                return BadRequest(BothSizesAreNullMessage());
-                            }
-                        }
-                        else
-                        {
-                            return Unauthorized(UnAuthMessage);
-                        }
-                    }
-                    else
-                    {
-                        return NotFound(ShoeNotFoundMessage(id));
-                    }
-                } else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
-                
+
+                if (!await _service.ShoeExistsById(id))
+                {
+                    return NotFound(ShoeNotFoundMessage(id));
+                }
+
+                if (!await _service.ShoeIsOwnedByUserAsync(id, UserId) && !IsAdmin)
+                {
+                    return Unauthorized(UnAuthMessage);
+                }
+
+                if (shoe.BothSizesAreNull())
+                {
+                    return BadRequest(BothSizesAreNullMessage());
+                }
+
+                var coreShoe = ApiMapper.MapShoe(shoe, id);
+
+                coreShoe = await _service.UpdateShoeAsync(coreShoe, id);
+
+                return Ok("Shoe has been updated!");
+
             } catch (Exception ex)
             {
                 return InternalError(ex);

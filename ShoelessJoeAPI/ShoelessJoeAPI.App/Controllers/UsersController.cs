@@ -10,6 +10,7 @@ using System.Text;
 
 namespace ShoelessJoeAPI.App.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerHelper
@@ -27,8 +28,6 @@ namespace ShoelessJoeAPI.App.Controllers
         /// Retrieves all the users in the database and converts them to type ApiUser
         /// </summary>
         /// <returns></returns>
-
-        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(List<ApiUser>), 200)]
         [ProducesResponseType(404)]
@@ -39,27 +38,25 @@ namespace ShoelessJoeAPI.App.Controllers
             {                
                 var coreUsers = await _service.GetUsersAsync();
 
-                if (coreUsers.Count > 0)
-                {
-                    var apiUsers = new List<ApiUser>();
-
-                    for (int i = 0; i < coreUsers.Count; i++)
-                    {
-                        apiUsers.Add(ApiMapper.MapUser(coreUsers[i]));
-                    }
-
-                    return Ok(apiUsers);
-                } else
+                if (coreUsers.Count == 0)
                 {
                     return NotFound("No users found.");
                 }
+
+                var apiUsers = new List<ApiUser>();
+
+                for (int i = 0; i < coreUsers.Count; i++)
+                {
+                    apiUsers.Add(ApiMapper.MapUser(coreUsers[i]));
+                }
+
+                return Ok(apiUsers);
             } catch (Exception e)
             {
                 return InternalError(e);
             }
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ApiUser), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -68,16 +65,14 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (await _service.UserExistsByIdAsync(id))
-                {
-                    var coreUser = await _service.GetUserByIdAsync(id);
-
-                    return Ok(ApiMapper.MapUser(coreUser));
-                }
-                else
+                if (!await _service.UserExistsByIdAsync(id))
                 {
                     return NotFound(UserNotFoundMessage(id));
                 }
+
+                var coreUser = await _service.GetUserByIdAsync(id);
+
+                return Ok(ApiMapper.MapUser(coreUser));
             } catch(Exception e)
             {
                 return InternalError(e);
@@ -93,29 +88,27 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    if (await _service.UserExistsByEmailAsync(model.Email))
-                    {
-                        return BadRequest(EmailAlreadyExistsMessage(model.Email));
-                    }
-
-                    if (await _service.UserExistsByPhoneNumbAsync(model.PhoneNumb))
-                    {
-                        return BadRequest(PhoneNumbExistsMessage(model.PhoneNumb));
-                    }
-
-                    var coreUser = ApiMapper.MapUser(model);
-                    coreUser.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
-
-                    await _service.AddUserAsync(coreUser);
-
-                    return Ok("User has been registered");
-                }
-                else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
+
+                if (await _service.UserExistsByEmailAsync(model.Email))
+                {
+                    return BadRequest(EmailAlreadyExistsMessage(model.Email));
+                }
+
+                if (await _service.UserExistsByPhoneNumbAsync(model.PhoneNumb))
+                {
+                    return BadRequest(PhoneNumbExistsMessage(model.PhoneNumb));
+                }
+
+                var coreUser = ApiMapper.MapUser(model);
+                coreUser.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
+                await _service.AddUserAsync(coreUser);
+
+                return Ok("User has been registered");
 
             }
             catch (Exception e)
@@ -124,7 +117,6 @@ namespace ShoelessJoeAPI.App.Controllers
             }
         }
 
-        [Authorize]
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(ApiUser), StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -134,35 +126,31 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    if (await _service.UserExistsByEmailAsync(model.Email, id))
-                    {
-                        return BadRequest(EmailAlreadyExistsMessage(model.Email));
-                    }
-
-                    if (await _service.UserExistsByPhoneNumbAsync(model.PhoneNumb, id))
-                    {
-                        return BadRequest(PhoneNumbExistsMessage(model.PhoneNumb));
-                    }
-
-                    if (await _service.UserExistsByIdAsync(model.UserId))
-                    {
-                        var coreUser = ApiMapper.MapUser(model);
-
-                        await _service.UpdateUserAsync(coreUser, id);
-
-                        return Ok(ApiMapper.MapUser(coreUser));
-                    }
-                    else
-                    {
-                        return NotFound(UserNotFoundMessage(id));
-                    }
-                }
-                else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
+
+                if (!await _service.UserExistsByIdAsync(model.UserId))
+                {
+                    return NotFound(UserNotFoundMessage(id));
+                }
+
+                if (await _service.UserExistsByEmailAsync(model.Email, id))
+                {
+                    return BadRequest(EmailAlreadyExistsMessage(model.Email));
+                }
+
+                if (await _service.UserExistsByPhoneNumbAsync(model.PhoneNumb, id))
+                {
+                    return BadRequest(PhoneNumbExistsMessage(model.PhoneNumb));
+                }
+
+                var coreUser = ApiMapper.MapUser(model);
+
+                await _service.UpdateUserAsync(coreUser, id);
+
+                return Ok(ApiMapper.MapUser(coreUser));
             }
             catch (Exception e)
             {
@@ -182,17 +170,23 @@ namespace ShoelessJoeAPI.App.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    if (await _service.UserExistsByEmailAsync(model.Email))
-                    {
-                        var coreUser = await _service.GetUserByEmailAsync(model.Email);
+                    return BadRequest(DisplaysModelStateErrors());
+                }
 
-                        if (!BCrypt.Net.BCrypt.Verify(model.Password, coreUser.Password))
-                        {
-                            return BadRequest("Incorrect password");
-                        }
+                if (await _service.UserExistsByEmailAsync(model.Email))
+                {
+                    return BadRequest("Incorrect email address");
+                }
 
-                        var claims = new[]
-                        {
+                var coreUser = await _service.GetUserByEmailAsync(model.Email);
+
+                if (!BCrypt.Net.BCrypt.Verify(model.Password, coreUser.Password))
+                {
+                    return BadRequest("Incorrect password");
+                }
+
+                var claims = new[]
+                {
                             new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                             new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
@@ -202,36 +196,26 @@ namespace ShoelessJoeAPI.App.Controllers
                             new Claim("FirstName", coreUser.FirstName),
                             new Claim("LastName", coreUser.LastName),
                             new Claim("IsAdmin", coreUser.IsAdmin.ToString())
-                        };                                               
-
-                        var tokenHandler = new JwtSecurityTokenHandler();
-
-                        var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]));
-
-                        var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
-
-                        var tokenDescripton = new SecurityTokenDescriptor
-                        {
-                            Subject = new ClaimsIdentity(claims),
-                            Expires = DateTime.UtcNow.AddHours(1),
-                            SigningCredentials = signIn
                         };
 
-                        var token = tokenHandler.CreateToken(tokenDescripton);
+                var tokenHandler = new JwtSecurityTokenHandler();
 
-                        var jwt = tokenHandler.WriteToken(token);
+                var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]));
 
-                        return Ok(ApiMapper.MapUser(coreUser, jwt));
-                    }
-                    else
-                    {
-                        return BadRequest("Incorrect email address");
-                    }
-                }
-                else
+                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
+                var tokenDescripton = new SecurityTokenDescriptor
                 {
-                    return BadRequest(DisplaysModelStateErrors());
-                }
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddHours(1),
+                    SigningCredentials = signIn
+                };
+
+                var token = tokenHandler.CreateToken(tokenDescripton);
+
+                var jwt = tokenHandler.WriteToken(token);
+
+                return Ok(ApiMapper.MapUser(coreUser, jwt));
             }
             catch (Exception e)
             {

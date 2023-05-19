@@ -35,28 +35,26 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
-                if ((userId is null) || (userId != UserId) && !IsAdmin)
+                if (userId is not null && !UserIdDoesMatch((int)userId))
                 {
                     return Unauthorized(UnAuthMessage);
                 }
 
                 var corePotentialBuys = await _service.GetPotentialBuysAsync(userId, shoeId, isSold, dateSold, index);
 
-                if (corePotentialBuys.Count > 0)
-                {
-                    var apiPotentialBuys = new List<ApiMultiPotentialBuyModel>();
-
-                    for (int i = 0; i < corePotentialBuys.Count; i++)
-                    {
-                        apiPotentialBuys.Add(new ApiMultiPotentialBuyModel(corePotentialBuys[i]));
-                    }
-
-                    return Ok(apiPotentialBuys);
-                }
-                else
+                if (corePotentialBuys.Count == 0)
                 {
                     return NotFound("No shoes found");
                 }
+
+                var apiPotentialBuys = new List<ApiMultiPotentialBuyModel>();
+
+                for (int i = 0; i < corePotentialBuys.Count; i++)
+                {
+                    apiPotentialBuys.Add(new ApiMultiPotentialBuyModel(corePotentialBuys[i]));
+                }
+
+                return Ok(apiPotentialBuys);
 
             } catch (Exception ex)
             {
@@ -120,46 +118,36 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
-                if (ModelState.IsValid)
-                {
-                    if (await _userService.UserExistsByIdAsync(model.UserId))
-                    {
-                        if (UserIdDoesMatch(model.UserId))
-                        {
-                            if (await _shoeService.ShoeExistsById(model.ShoeId))
-                            {
-                                if (!await _service.PotentialBuyExistsByUserIdAsync(model.UserId, model.ShoeId))
-                                {
-                                    var potentialBuy = ApiMapper.MapPotentialBuy(model);
-
-                                    potentialBuy = await _service.AddPotentialBuyAsync(potentialBuy);
-
-                                    return Ok(ApiMapper.MapPotentialBuy(potentialBuy));
-                                }
-                                else
-                                {
-                                    return BadRequest(BidAlreadyExists());
-                                }
-                            }
-                            else
-                            {
-                                return BadRequest(ShoesController.ShoeNotFoundMessage(model.ShoeId));
-                            }
-                        }
-                        else
-                        {
-                            return Unauthorized(UnAuthMessage);
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest(UsersController.UserNotFoundMessage(model.UserId));
-                    }
-                }
-                else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
+
+                if (!UserIdDoesMatch(model.UserId))
+                {
+                    return Unauthorized(UnAuthMessage);
+                }
+
+                if (!await _userService.UserExistsByIdAsync(model.UserId))
+                {
+                    return BadRequest(UsersController.UserNotFoundMessage(model.UserId));
+                }                
+
+                if (!await _shoeService.ShoeExistsById(model.ShoeId))
+                {
+                    return BadRequest(ShoesController.ShoeNotFoundMessage(model.ShoeId));
+                }
+
+                if (await _service.PotentialBuyExistsByUserIdAsync(model.UserId, model.ShoeId))
+                {
+                    return BadRequest(BidAlreadyExists());
+                }
+
+                var potentialBuy = ApiMapper.MapPotentialBuy(model);
+
+                potentialBuy = await _service.AddPotentialBuyAsync(potentialBuy);
+
+                return Ok(ApiMapper.MapPotentialBuy(potentialBuy));
             } catch (Exception ex)
             {
                 return InternalError(ex);

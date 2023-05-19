@@ -35,19 +35,18 @@ namespace ShoelessJoeAPI.App.Controllers
             {
                 var coreModels = await _service.GetModelsAsync(userId, index);
 
-                if (coreModels.Count > 0)
-                {
-                    var apiModels = new List<ApiModel>();
-                    for (int i = 0; i < coreModels.Count; i++)
-                    {
-                        apiModels.Add(ApiMapper.MapModel(coreModels[i]));
-                    }
-
-                    return Ok(apiModels);
-                } else
+                if (coreModels.Count == 0)
                 {
                     return NotFound("No models found");
                 }
+
+                var apiModels = new List<ApiModel>();
+                for (int i = 0; i < coreModels.Count; i++)
+                {
+                    apiModels.Add(ApiMapper.MapModel(coreModels[i]));
+                }
+
+                return Ok(apiModels);
             } catch (Exception e)
             {
                 return InternalError(e);
@@ -63,16 +62,14 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (await _service.ModelExistsAsync(id))
-                {
-                    var coreModel = await _service.GetModelAsync(id);
-
-                    return Ok(ApiMapper.MapModel(coreModel));
-                }
-                else
+                if (!await _service.ModelExistsAsync(id))
                 {
                     return NotFound(ModelNotFoundMessage(id));
                 }
+
+                var coreModel = await _service.GetModelAsync(id);
+
+                return Ok(ApiMapper.MapModel(coreModel));
             }
             catch (Exception e)
             {
@@ -89,38 +86,30 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    if (await _userService.UserExistsByIdAsync(model.UserId))
-                    {
-                        if (await _manufacterService.ManufacterExistsByUserId(model.ManufacterId, model.UserId))
-                        {
-                            if (!await _service.ModelNameExistsAsync(model.ModelName, model.UserId))
-                            {
-                                var coreModel = ApiMapper.MapModel(model);
-                                coreModel = await _service.AddModelAsync(coreModel);
-
-                                return Ok(ApiMapper.MapModelDropDown(coreModel));
-                            }
-                            else
-                            {
-                                return BadRequest(ModelNameExistMessage(model.ModelName));
-                            }
-                        }
-                        else
-                        {
-                            return Unauthorized(ManufacturesController.ManufacterNotAccessNessage());
-                        }
-                    }
-                    else
-                    {
-                        return NotFound(UsersController.UserNotFoundMessage(model.UserId));
-                    }
-                }
-                else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
+
+                if (!await _userService.UserExistsByIdAsync(model.UserId))
+                {
+                    return NotFound(UsersController.UserNotFoundMessage(model.UserId));
+                }
+
+                if (!await _manufacterService.ManufacterExistsByUserId(model.ManufacterId, model.UserId))
+                {
+                    return Unauthorized(ManufacturesController.ManufacterNotAccessNessage());
+                }
+
+                if (await _service.ModelNameExistsAsync(model.ModelName, model.UserId))
+                {
+                    return BadRequest(ModelNameExistMessage(model.ModelName));
+                }
+
+                var coreModel = ApiMapper.MapModel(model);
+                coreModel = await _service.AddModelAsync(coreModel);
+
+                return Ok(ApiMapper.MapModelDropDown(coreModel));
 
             } catch (Exception e)
             {
@@ -137,32 +126,27 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    if (await _manufacterService.ManufacterExistsByUserId(id, model.UserId))
-                    {
-                        if (await _service.ModelNameExistsAsync(model.ModelName, model.UserId, id))
-                        {
-                            var coreModel = ApiMapper.MapModel(model, id);
-
-                            coreModel = await _service.UpdateModelAsync(coreModel, id);
-
-                            return Ok(ApiMapper.MapModelDropDown(coreModel));
-                        }
-                        else
-                        {
-                            return BadRequest(ModelNameExistMessage(model.ModelName));
-                        }
-                    }
-                    else
-                    {
-                        return Unauthorized(ManufacturesController.ManufacterNotAccessNessage());
-                    }
-                }
-                else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
+
+                if (!await _manufacterService.ManufacterExistsByUserId(id, model.UserId))
+                {
+                    return Unauthorized(ManufacturesController.ManufacterNotAccessNessage());
+                }
+
+                if (await _service.ModelNameExistsAsync(model.ModelName, model.UserId, id))
+                {
+                    return BadRequest(ModelNameExistMessage(model.ModelName));
+                }
+
+                var coreModel = ApiMapper.MapModel(model, id);
+
+                coreModel = await _service.UpdateModelAsync(coreModel, id);
+
+                return Ok(ApiMapper.MapModelDropDown(coreModel));
+
             } catch (Exception e)
             {
                 return InternalError(e);

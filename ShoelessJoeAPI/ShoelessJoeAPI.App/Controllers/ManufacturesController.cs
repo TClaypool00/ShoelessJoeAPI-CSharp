@@ -31,20 +31,19 @@ namespace ShoelessJoeAPI.App.Controllers
             try
             {
                 var manufactures = await _service.GetManufactersAsync(userId, index);
-                if (manufactures.Count > 0)
-                {
-                    var apiManufacers = new List<ApiManufacter>();
-
-                    for (int i = 0; i < manufactures.Count; i++)
-                    {
-                        apiManufacers.Add(ApiMapper.MapManufacter(manufactures[i]));
-                    }
-
-                    return Ok(apiManufacers);
-                } else
+                if (manufactures.Count == 0)
                 {
                     return NotFound("No manufacters found");
                 }
+
+                var apiManufacers = new List<ApiManufacter>();
+
+                for (int i = 0; i < manufactures.Count; i++)
+                {
+                    apiManufacers.Add(ApiMapper.MapManufacter(manufactures[i]));
+                }
+
+                return Ok(apiManufacers);
             } catch (Exception e)
             {
                 return InternalError(e);
@@ -59,15 +58,14 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (await _service.ManufacterExistsById(id))
-                {
-                    var coreManufacter = await _service.GetGetManufacterAsync(id);
-
-                    return Ok(ApiMapper.MapManufacter(coreManufacter));
-                } else
+                if (!await _service.ManufacterExistsById(id))
                 {
                     return NotFound(ManufacterNotFoundMessage(id));
                 }
+
+                var coreManufacter = await _service.GetGetManufacterAsync(id);
+
+                return Ok(ApiMapper.MapManufacter(coreManufacter));
             }
             catch (Exception e)
             {
@@ -87,21 +85,19 @@ namespace ShoelessJoeAPI.App.Controllers
 
                 var dropDowns = await _service.GetCoreManufacterDropDown((int)userId, index);
 
-                if (dropDowns.Count > 0)
-                {
-                    var apiDropDowns = new List<ApiManufacterDropDown>();
-
-                    for (int i = 0; i < dropDowns.Count; i++)
-                    {
-                        apiDropDowns.Add(ApiMapper.MapManufacter(dropDowns[i]));
-                    }
-
-                    return Ok(apiDropDowns);
-                }
-                else
+                if (dropDowns.Count == 0)
                 {
                     return NotFound("No manufacters found");
                 }
+
+                var apiDropDowns = new List<ApiManufacterDropDown>();
+
+                for (int i = 0; i < dropDowns.Count; i++)
+                {
+                    apiDropDowns.Add(ApiMapper.MapManufacter(dropDowns[i]));
+                }
+
+                return Ok(apiDropDowns);
             }
             catch (Exception e)
             {
@@ -117,31 +113,25 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    if (await _userService.UserExistsByIdAsync(model.UserId))
-                    {
-                        if (!await _service.ManufacterExistByName(model.ManufacterName, model.UserId))
-                        {
-                            var coreManufacter = ApiMapper.MapManufacter(model);
-                            coreManufacter = await _service.AddManufacterAsync(coreManufacter);
-
-                            return Ok(ApiMapper.MapManufacterDropDown(coreManufacter));
-                        }
-                        else
-                        {
-                            return BadRequest($"A manufacter with the {model.ManufacterName} already exists");
-                        }
-                    }
-                    else
-                    {
-                        return BadRequest(UsersController.UserNotFoundMessage(model.UserId));
-                    }
-                }
-                else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
+
+                if (!await _userService.UserExistsByIdAsync(model.UserId))
+                {
+                    return BadRequest(UsersController.UserNotFoundMessage(model.UserId));
+                }
+
+                if (await _service.ManufacterExistByName(model.ManufacterName, model.UserId))
+                {
+                    return BadRequest($"A manufacter with the {model.ManufacterName} already exists");
+                }
+
+                var coreManufacter = ApiMapper.MapManufacter(model);
+                coreManufacter = await _service.AddManufacterAsync(coreManufacter);
+
+                return Ok(ApiMapper.MapManufacterDropDown(coreManufacter));
             }
             catch (Exception e)
             {
@@ -158,32 +148,26 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    if (await _service.ManufacterExistsByUserId(id, manufacter.UserId))
-                    {
-                        if (!await _service.ManufacterExistByName(manufacter.ManufacterName, manufacter.UserId))
-                        {
-                            var coreManufacter = ApiMapper.MapManufacter(manufacter);
-
-                            coreManufacter = await _service.UpdateManufacter(coreManufacter, id);
-
-                            return Ok(ApiMapper.MapManufacter(coreManufacter));
-                        }
-                        else
-                        {
-                            return BadRequest(ManufacterNameExists(manufacter.ManufacterName));
-                        }
-                    }
-                    else
-                    {
-                        return NotFound(ManufacterNotFoundMessage(id));
-                    }
-                }
-                else
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
+
+                if (!await _service.ManufacterExistsByUserId(id, manufacter.UserId))
+                {
+                    return NotFound(ManufacterNotFoundMessage(id));
+                }
+
+                if (await _service.ManufacterExistByName(manufacter.ManufacterName, manufacter.UserId))
+                {
+                    return BadRequest(ManufacterNameExists(manufacter.ManufacterName));
+                }
+
+                var coreManufacter = ApiMapper.MapManufacter(manufacter);
+
+                coreManufacter = await _service.UpdateManufacter(coreManufacter, id);
+
+                return Ok(ApiMapper.MapManufacter(coreManufacter));
             }
             catch (Exception e)
             {
@@ -199,16 +183,14 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (await _service.ManufacterExistsById(id))
-                {
-                    await _service.DeleteManufacterAsync(id);
-
-                    return Ok("Manufacter has been deleted");
-                }
-                else
+                if (!await _service.ManufacterExistsById(id))
                 {
                     return NotFound(ManufacterNotFoundMessage(id));
                 }
+
+                await _service.DeleteManufacterAsync(id);
+
+                return Ok("Manufacter has been deleted");
             }
             catch (Exception e)
             {
