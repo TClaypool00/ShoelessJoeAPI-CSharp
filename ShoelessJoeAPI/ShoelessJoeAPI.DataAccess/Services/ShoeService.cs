@@ -120,9 +120,35 @@ namespace ShoelessJoeAPI.DataAccess.Services
 
             if (ownerId is null && soldToId is null && datePosted is null && isSold is null)
             {
-                shoes = await FindDataShoe()
-                .Take(10)
-                .Skip(_index)
+                shoes = await _context.Shoes.Select(s => new Shoe
+                {
+                    ShoeId = s.ShoeId,
+                    LeftSize = s.LeftSize,
+                    RightSize = s.RightSize,
+                    DatePosted = s.DatePosted,
+                    Model = new Model
+                    {
+                        ModelName = s.Model.ModelName,
+                        Manufacter = new Manufacter
+                        {
+                            ManufacterName = s.Model.Manufacter.ManufacterName,
+                            User = new User
+                            {
+                                FirstName = s.Model.Manufacter.User.FirstName,
+                                LastName = s.Model.Manufacter.User.LastName
+                            }
+                        }
+                    },
+                    ShoeImage = new ShoeImage
+                    {
+                        LeftShoeImage1 = s.ShoeImage.LeftShoeImage1,
+                        LeftShoeImage2 = s.ShoeImage.LeftShoeImage2,
+                        RightShoeImage1 = s.ShoeImage.RightShoeImage1,
+                        RightShoeImage2 = s.ShoeImage.RightShoeImage2
+                    }
+                })
+                .Take(15)
+                .OrderBy(x => x.DatePosted)
                 .ToListAsync();
             }
             else
@@ -144,15 +170,15 @@ namespace ShoelessJoeAPI.DataAccess.Services
                 if (datePosted is not null)
                 {
                     shoes = shoes.Where(b => b.DatePosted ==  datePosted).ToList();
-                }
+                }            
+            }
 
-                if (shoes.Count > 0)
+            if (shoes.Count > 0)
+            {
+                for (int i = 0; i < shoes.Count; i++)
                 {
-                    for (int i = 0; i < shoes.Count; i++)
-                    {
-                        coreShoes.Add(Mapper.MapShoe(shoes[i]));
-                    }
-                }                
+                    coreShoes.Add(Mapper.MapShoe(shoes[i]));
+                }
             }
 
             return coreShoes;

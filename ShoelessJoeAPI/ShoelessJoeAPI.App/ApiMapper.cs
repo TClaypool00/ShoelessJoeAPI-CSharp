@@ -1,4 +1,5 @@
 ﻿using ShoelessJoeAPI.App.ApiModels;
+using ShoelessJoeAPI.App.ApiModels.MultiModel;
 using ShoelessJoeAPI.App.ApiModels.PartialModels;
 using ShoelessJoeAPI.App.ApiModels.PostModels;
 using ShoelessJoeAPI.App.ApiModels.UpdateModels;
@@ -159,6 +160,20 @@ namespace ShoelessJoeAPI.App
             };
 
             return apiShoe;
+        }
+
+        public static MultiShoeModel MapMulitShoe(CoreShoe shoe)
+        {
+            return new MultiShoeModel(shoe.ShoeImage)
+            {
+                BothShoes = shoe.RightSize != null && shoe.LeftSize != null,
+                OwnerFirstName = shoe.Model.Manufacter.User.FirstName,
+                OwnerLastName = shoe.Model.Manufacter.User?.LastName,
+                DatePosted = shoe.DatePosted.ToString(),
+                ManufacterName = shoe.Model.Manufacter.ManufacterName,
+                ModelName = shoe.Model.ModelName,
+                ShoeId = shoe.ShoeId
+            };
         }
 
         public static CoreShoe MapShoe(PostShoeModel shoe, int id = 0)

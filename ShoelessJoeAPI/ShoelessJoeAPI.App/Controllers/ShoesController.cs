@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShoelessJoeAPI.App.ApiModels;
+using ShoelessJoeAPI.App.ApiModels.MultiModel;
 using ShoelessJoeAPI.App.ApiModels.PostModels;
 using ShoelessJoeAPI.Core.CoreModels;
 using ShoelessJoeAPI.Core.Interfaces;
@@ -28,6 +29,7 @@ namespace ShoelessJoeAPI.App.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(List<ApiShoeModel>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<MultiShoeModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -38,27 +40,34 @@ namespace ShoelessJoeAPI.App.Controllers
 
             try
             {
-                if (ownerId is not null && ownerId != UserId && !IsAdmin)
-                {
-                    return Unauthorized();
-                }
-
-                var apiShoes = new List<ApiShoeModel>();
-
                 var coreShoes = await _service.GetShoesAsync(ownerId, soldToId, datePosted, isSold, index);
 
-                if (coreShoes.Count > 0)
+                if (coreShoes.Count == 0)
                 {
+                    return NotFound("No shoes found");
+                }
+
+                if (ownerId == null && soldToId == null && datePosted == null && isSold == null)
+                {
+                    var apiMulitshoes = new List<MultiShoeModel>();
+
+                    for (int i = 0; i < coreShoes.Count; i++)
+                    {
+                        apiMulitshoes.Add(ApiMapper.MapMulitShoe(coreShoes[i]));
+                    }
+
+                    return Ok(apiMulitshoes);
+                }
+                else
+                {
+                    var apiShoes = new List<ApiShoeModel>();
+
                     for (int i = 0; i < coreShoes.Count; i++)
                     {
                         apiShoes.Add(ApiMapper.MapShoe(coreShoes[i]));
                     }
 
                     return Ok(apiShoes);
-                }
-                else
-                {
-                    return NotFound("No shoes found");
                 }
             }
             catch (Exception ex)

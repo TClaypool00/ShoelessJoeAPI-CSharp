@@ -23,6 +23,8 @@ namespace ShoelessJoeAPI.Core.CoreModels
 
         public string LeftShoeImage2Path { get; set; }
 
+        public string PicturePath { get; set; }
+
         public int ShoeId { get; set; }
         public CoreShoe Shoe { get; set; }
     }
