@@ -28,6 +28,7 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
         public static string ConnectionString { get; } = "server={your server};user={your username};password={your password};database=ShoelessJoeCSharp";
         public static Version Version { get; } = new Version(8, 0, 31);
         public static string ErrorPath { get; } = "{Your path to error log}";
+        public static string LocalAppUrl { get; } = "{Your URL for LOCAL development}";
     }
 }
 
