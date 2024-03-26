@@ -168,12 +168,12 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return BadRequest(DisplaysModelStateErrors());
                 }
 
-                if (await _service.UserExistsByEmailAsync(model.Email))
+                if (!await _service.UserExistsByEmailAsync(model.Email))
                 {
                     return BadRequest("Incorrect email address");
                 }
