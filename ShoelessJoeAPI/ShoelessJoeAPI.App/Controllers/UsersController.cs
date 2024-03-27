@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Tokens;
 using ShoelessJoeAPI.App.ApiModels;
+using ShoelessJoeAPI.App.ApiModels.PostModels;
+using ShoelessJoeAPI.Core.CoreModels;
 using ShoelessJoeAPI.Core.Interfaces;
+using ShoelessJoeAPI.DataAccess.DataModels;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ShoelessJoeAPI.App.Controllers
@@ -17,11 +21,13 @@ namespace ShoelessJoeAPI.App.Controllers
     {
         private readonly IUserService _service;
         private readonly IConfiguration _configuration;
+        private readonly IRefreshTokenService _refreshTokenService;
 
-        public UsersController(IUserService service, IConfiguration configuration) : base("Users")
+        public UsersController(IUserService service, IConfiguration configuration, IRefreshTokenService refreshTokenService) : base("Users")
         {
             _service = service;
             _configuration = configuration;
+            _refreshTokenService = refreshTokenService;
         }
 
         /// <summary>
@@ -35,7 +41,7 @@ namespace ShoelessJoeAPI.App.Controllers
         public async Task<ActionResult> GetAllUsers()
         {
             try
-            {                
+            {
                 var coreUsers = await _service.GetUsersAsync();
 
                 if (coreUsers.Count == 0)
@@ -73,7 +79,7 @@ namespace ShoelessJoeAPI.App.Controllers
                 var coreUser = await _service.GetUserByIdAsync(id);
 
                 return Ok(ApiMapper.MapUser(coreUser));
-            } catch(Exception e)
+            } catch (Exception e)
             {
                 return InternalError(e);
             }
@@ -82,7 +88,7 @@ namespace ShoelessJoeAPI.App.Controllers
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(List<string>) ,StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(List<string>), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> PostUserAsync([FromBody] RegisterModel model)
         {
@@ -185,37 +191,53 @@ namespace ShoelessJoeAPI.App.Controllers
                     return BadRequest("Incorrect password");
                 }
 
-                var claims = new[]
+                var claims = GetClaims(coreUser);
+
+                string token = CreateToken(claims);
+                string refreshToken = CreateRefreshToken();
+
+                await _refreshTokenService.AddRefreshTokenAsync(refreshToken, DateTime.Now.AddDays(7), coreUser.UserId);
+
+
+                return Ok(ApiMapper.MapUser(coreUser, token, refreshToken));
+            }
+            catch (Exception e)
+            {
+                return InternalError(e);
+            }
+        }
+        [HttpPost("RefeshToken")]
+        public async Task<ActionResult> PostRefreshToken(PostRefreshTokenModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
                 {
-                            new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
-                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                            new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
-                            new Claim("UserId", coreUser.UserId.ToString()),
-                            new Claim("Email", coreUser.Email),
-                            new Claim("PhoneNumber", coreUser.PhoneNumb),
-                            new Claim("FirstName", coreUser.FirstName),
-                            new Claim("LastName", coreUser.LastName),
-                            new Claim("IsAdmin", coreUser.IsAdmin.ToString())
-                        };
+                    return BadRequest(DisplaysModelStateErrors());
+                }
 
-                var tokenHandler = new JwtSecurityTokenHandler();
-
-                var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]));
-
-                var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
-
-                var tokenDescripton = new SecurityTokenDescriptor
+                if (!await _refreshTokenService.RefreshTokenExists(model.RefreshToken))
                 {
-                    Subject = new ClaimsIdentity(claims),
-                    Expires = DateTime.UtcNow.AddHours(1),
-                    SigningCredentials = signIn
-                };
+                    return NotFound("Refresh token not found");
+                }
 
-                var token = tokenHandler.CreateToken(tokenDescripton);
+                var refreshToken = await _refreshTokenService.GetRefreshTokn(model.RefreshToken);
 
-                var jwt = tokenHandler.WriteToken(token);
+                if (refreshToken.DateExpired < DateTime.Now)
+                {
+                    return BadRequest("Refresh token has expired");
+                }
 
-                return Ok(ApiMapper.MapUser(coreUser, jwt));
+                var currentUser = GetPrincipalFromExpiredToken(model.Token);
+                int userId = int.Parse(currentUser.Claims.FirstOrDefault(x => x.Type.Equals("UserId")).Value);
+
+                if (userId != refreshToken.UserId)
+                {
+                    return Unauthorized(UnAuthMessage);
+                }
+
+                return Ok(CreateToken(currentUser.Claims));
+
             }
             catch (Exception e)
             {
@@ -237,6 +259,68 @@ namespace ShoelessJoeAPI.App.Controllers
         {
             return $"A user with a phone number of {phoneNumb} already exists";
         }
-            
+
+        private string CreateToken(IEnumerable<Claim> claims)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]));
+
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
+
+            var tokenDescripton = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = signIn
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescripton);
+
+            return tokenHandler.WriteToken(token);
+        }
+
+        private static string CreateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        private List<Claim> GetClaims(CoreUser coreUser)
+        {
+            return new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
+                new Claim("UserId", coreUser.UserId.ToString()),
+                new Claim("Email", coreUser.Email),
+                new Claim("PhoneNumber", coreUser.PhoneNumb),
+                new Claim("FirstName", coreUser.FirstName),
+                new Claim("LastName", coreUser.LastName),
+                new Claim("IsAdmin", coreUser.IsAdmin.ToString())
+            };
+        }
+
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:Key"])),
+                ValidateLifetime = false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("Invalid token");
+
+            return principal;
+        }
     }
 }

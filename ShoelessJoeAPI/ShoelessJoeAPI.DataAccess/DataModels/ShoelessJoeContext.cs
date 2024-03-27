@@ -54,5 +54,6 @@ namespace ShoelessJoeAPI.DataAccess.DataModels
         public DbSet<Comment> Comments { get; set; }
         public DbSet<PotentialBuy> PotentialBuys { get; set; }
         public DbSet<ShoeImage> ShoeImages { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
     }
 }

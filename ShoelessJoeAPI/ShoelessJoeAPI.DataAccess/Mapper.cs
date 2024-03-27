@@ -324,5 +324,15 @@ namespace ShoelessJoeAPI.DataAccess
 
             return dataComment;
         }
+
+        public static CoreRefreshToken MapRefreshToken(RefreshToken refreshToken)
+        {
+            return new CoreRefreshToken
+            {
+                RefreshToken = refreshToken.Token,
+                DateExpired = refreshToken.DateExpired,
+                UserId = refreshToken.UserId
+            };
+        }
     }
 }

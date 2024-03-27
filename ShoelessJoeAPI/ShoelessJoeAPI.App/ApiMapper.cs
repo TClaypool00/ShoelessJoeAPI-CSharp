@@ -50,7 +50,7 @@ namespace ShoelessJoeAPI.App
             };
         }
 
-        public static AuthUser MapUser(CoreUser user, string token)
+        public static AuthUser MapUser(CoreUser user, string token, string refreshToken)
         {
             return new AuthUser
             {
@@ -60,7 +60,8 @@ namespace ShoelessJoeAPI.App
                 Email = user.Email,
                 PhoneNumb = user.PhoneNumb,
                 IsAdmin = user.IsAdmin,
-                Token = token
+                Token = token,
+                RefreshToken = refreshToken
             };
         }
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShoelessJoeAPI.DataAccess.DataModels;
 
@@ -10,9 +11,10 @@ using ShoelessJoeAPI.DataAccess.DataModels;
 namespace ShoelessJoeAPI.DataAccess.Migrations
 {
     [DbContext(typeof(ShoelessJoeContext))]
-    partial class ShoelessJoeContextModelSnapshot : ModelSnapshot
+    [Migration("20240326165614_AddedRefreshTokens")]
+    partial class AddedRefreshTokens
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
